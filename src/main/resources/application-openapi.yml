@@ -1,0 +1,13 @@
+
+spring:
+  config:
+    activate:
+      on-profile: "!real"
+
+springdoc:
+  packages-to-scan: com.closememo.command.interfaces
+  paths-to-match: /command/**
+  swagger-ui:
+    path: /command/swagger-ui.html
+  api-docs:
+    path: /command/api-docs

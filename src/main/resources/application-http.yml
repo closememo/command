@@ -1,0 +1,16 @@
+http:
+  rest-template:
+    configs:
+      default:
+        read-timeout: 3000
+        connection-timeout: 1000
+        max-connection-count: 30
+        max-connection-per-route: 30
+
+  naver:
+    auth:
+      root-uri: https://nid.naver.com
+      client-id: OrLmkctsCrhLTJW9OR5J
+      client-secret: pBGxdpkbpb
+    api:
+      root-uri: https://openapi.naver.com

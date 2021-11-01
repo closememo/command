@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: 1
+      retries: 3
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  kafka:
+    bootstrap-servers: 10.10.101.102:19092

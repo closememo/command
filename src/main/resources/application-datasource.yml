@@ -1,0 +1,50 @@
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://localhost:13306/command?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: devclosememo12#
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+        show-sql: true
+        format-sql: true
+        use-sql-comments: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://10.10.101.102:33306/command?useUnicode=true&characterEncoding=utf-8
+    username: devtester
+    password: devclosememo12#
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+        show-sql: true
+        format-sql: true
+        use-sql-comments: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update

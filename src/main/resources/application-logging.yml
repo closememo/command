@@ -1,0 +1,19 @@
+logging:
+  level:
+    root: INFO
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "!real"
+
+logging:
+  level:
+    com.closememo.command: DEBUG
+    com.zaxxer.hikari: TRACE
+    org.hibernate.metamodel.model.convert.internal: TRACE
+    org.hibernate.resource.jdbc.internal: TRACE
+    org.springframework.jdbc.core: TRACE
+    org.springframework.jdbc.core.JdbcTemplate: DEBUG
