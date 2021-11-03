@@ -4,7 +4,6 @@ import com.closememo.command.domain.Events;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.infra.persistence.converters.StringListConverter;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -16,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.lang.NonNull;
 
 @Entity
 @Table(name = "documents")
@@ -24,9 +25,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Document {
 
-  private static final long NUMBER_OF_DOCUMENT_LIMIT = 500;
+  private static final int NUMBER_OF_DOCUMENT_LIMIT = 500;
+  private static final int NUMBER_OF_TAG_LIMIT = 100;
   private static final int MAX_TITLE_LENGTH = 100;
   private static final int MAX_CONTENT_LENGTH = 5000;
+  private static final int MAX_TAG_LENGTH = 25;
+  private static final String VALID_TAG_CHARS = "[_\\dA-Za-zㄱ-ㆎ가-힣ힰ-ퟆퟋ-ퟻＡ-Ｚａ-ｚｦ-ﾾￂ-ￇￊ-ￏￒ-ￗￚ-ￜ]+";
 
   @EmbeddedId
   private DocumentId id;
@@ -57,15 +61,13 @@ public class Document {
   }
 
   public static Document newOne(DocumentRepository documentRepository, AccountId ownerId,
-      String title, String content, List<String> tags) {
+      @NonNull String title, String content, @NonNull List<String> tags) {
 
     validateDocumentLimit(documentRepository, ownerId);
     validateTitle(title);
     validateContent(content);
+    validateTags(tags);
 
-    if (tags == null) {
-      tags = Collections.emptyList();
-    }
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Document document = new Document(documentRepository.nextId(), ownerId,
@@ -80,6 +82,7 @@ public class Document {
 
     validateTitle(title);
     validateContent(content);
+    validateTags(tags);
 
     String previousContent = this.content;
     long previousVersion = this.version;
@@ -103,6 +106,10 @@ public class Document {
   }
 
   private static void validateTitle(String title) {
+    if (title == null) {
+      return;
+    }
+
     if (title.length() > MAX_TITLE_LENGTH) {
       throw new InvalidTitleException(
           String.format("title cannot exceed %d characters", MAX_TITLE_LENGTH));
@@ -113,6 +120,27 @@ public class Document {
     if (content.length() > MAX_CONTENT_LENGTH) {
       throw new InvalidContentException(
           String.format("content cannot exceed %d characters", MAX_CONTENT_LENGTH));
+    }
+  }
+
+  private static void validateTags(List<String> tags) {
+    if (CollectionUtils.isEmpty(tags)) {
+      return;
+    }
+
+    if (tags.size() > NUMBER_OF_TAG_LIMIT) {
+      throw new TagCountLimitExceededException(
+          String.format("the number of tags cannot exceed %d", NUMBER_OF_TAG_LIMIT));
+    }
+
+    for (String tag : tags) {
+      if (tag.length() > MAX_TAG_LENGTH) {
+        throw new InvalidTagException(
+            String.format("tag cannot exceed %d characters", MAX_TAG_LENGTH));
+      }
+      if (!tag.matches(VALID_TAG_CHARS)) {
+        throw new InvalidTagException("tag contains invalid characters");
+      }
     }
   }
 

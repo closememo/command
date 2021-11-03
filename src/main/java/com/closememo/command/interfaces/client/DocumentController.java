@@ -14,9 +14,12 @@ import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,9 +41,12 @@ public class DocumentController {
   public DocumentId createDocument(@RequestBody @Valid CreateDocumentRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
+    String title = Optional.ofNullable(request.getTitle()).orElse(StringUtils.EMPTY);
+    List<String> tags = Optional.ofNullable(request.getTags()).orElse(Collections.emptyList());
+
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     CreateDocumentCommand command = new CreateDocumentCommand(requester, accountId,
-            request.getTitle(), request.getContent(), request.getTags());
+        title, request.getContent(), tags);
 
     return commandGateway.request(command);
   }
