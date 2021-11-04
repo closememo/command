@@ -10,7 +10,41 @@ http:
   naver:
     auth:
       root-uri: https://nid.naver.com
-      client-id: OrLmkctsCrhLTJW9OR5J
-      client-secret: pBGxdpkbpb
     api:
       root-uri: https://openapi.naver.com
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+http:
+  naver:
+    auth:
+      client-id: OrLmkctsCrhLTJW9OR5J
+      client-secret: pBGxdpkbpb
+
+  mail:
+   root-uri: http://localhost:10083
+   token: secret-token
+   read-timeout: 5000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+http:
+  naver:
+    auth:
+      client-id: OrLmkctsCrhLTJW9OR5J
+      client-secret: pBGxdpkbpb
+
+  mail:
+    root-uri: http://localhost:10083
+    token: secret-token
+    read-timeout: 5000

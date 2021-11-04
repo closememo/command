@@ -1,7 +1,9 @@
 package com.closememo.command.interfaces.client;
 
+import com.closememo.command.application.document.MailDocumentsCommand;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentsRequest;
+import com.closememo.command.interfaces.client.requests.document.MailDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.UpdateDocumentRequest;
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
@@ -81,7 +83,7 @@ public class DocumentController {
   @Operation(summary = "Delete Documents")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/delete-documents")
-  public void deleteDocument(@RequestBody @Valid DeleteDocumentsRequest request,
+  public void deleteDocuments(@RequestBody @Valid DeleteDocumentsRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
@@ -89,6 +91,23 @@ public class DocumentController {
         .map(DocumentId::new)
         .collect(Collectors.toList());
     DeleteDocumentsCommand command = new DeleteDocumentsCommand(requester, documentIds);
+
+    commandGateway.request(command);
+  }
+
+  @Operation(summary = "Send email about Documents")
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/mail-documents")
+  public void mailDocuments(@RequestBody @Valid MailDocumentsRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    AccountCommandRequester requester = new AccountCommandRequester(accountId);
+    List<DocumentId> documentIds = request.getDocumentIds().stream()
+        .map(DocumentId::new)
+        .collect(Collectors.toList());
+    boolean needToDelete = Boolean.TRUE.equals(request.getNeedToDelete());
+    MailDocumentsCommand command = new MailDocumentsCommand(requester,
+        accountId, documentIds, needToDelete);
 
     commandGateway.request(command);
   }
