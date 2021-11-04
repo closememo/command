@@ -1,4 +1,4 @@
-FROM reg.bitgadak.com/base:0.1
+FROM reg.bitgadak.com/closememo/command-base:0.1
 
 EXPOSE 10081
 
