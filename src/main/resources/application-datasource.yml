@@ -34,8 +34,8 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mariadb://10.10.101.102:33306/command?useUnicode=true&characterEncoding=utf-8
-    username: devtester
-    password: devclosememo12#
+    username: ${DEV-DB-USERNAME}
+    password: ${DEV-DB-PASSWORD}
 
   jpa:
     database: mysql

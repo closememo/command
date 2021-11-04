@@ -23,13 +23,13 @@ spring:
 http:
   naver:
     auth:
-      client-id: OrLmkctsCrhLTJW9OR5J
-      client-secret: pBGxdpkbpb
+      client-id: ${DEV-NAVER-CLIENT-ID}
+      client-secret: ${DEV-NAVER-CLIENT-SECRET}
 
   mail:
-   root-uri: http://localhost:10083
-   token: secret-token
-   read-timeout: 5000
+    root-uri: http://localhost:10083
+    token: ${DEV-MAIL-TOKEN}
+    read-timeout: 5000
 
 ---
 
@@ -41,10 +41,10 @@ spring:
 http:
   naver:
     auth:
-      client-id: OrLmkctsCrhLTJW9OR5J
-      client-secret: pBGxdpkbpb
+      client-id: ${DEV-NAVER-CLIENT-ID}
+      client-secret: ${DEV-NAVER-CLIENT-SECRET}
 
   mail:
     root-uri: http://localhost:10083
-    token: secret-token
+    token: ${DEV-MAIL-TOKEN}
     read-timeout: 5000
