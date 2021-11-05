@@ -4,7 +4,7 @@ spring:
     name: command
   profiles:
     active: local
-    include: actuator, datasource, http, kafka, logging, openapi, secret
+    include: actuator, datasource, elasticsearch, http, kafka, logging, openapi, secret
 
 server:
   port: 10081

@@ -11,6 +11,10 @@ import com.closememo.command.domain.document.Document;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.domain.document.DocumentNotFoundException;
 import com.closememo.command.domain.document.DocumentRepository;
+import com.closememo.command.infra.elasticsearch.ElasticsearchClient;
+import com.closememo.command.infra.elasticsearch.request.DeletePostRequest;
+import com.closememo.command.infra.elasticsearch.request.IndexPostRequest;
+import com.closememo.command.infra.elasticsearch.request.UpdatePostRequest;
 import com.closememo.command.infra.http.mail.MailClient;
 import com.closememo.command.infra.http.mail.SendMailRequest;
 import java.util.List;
@@ -24,12 +28,17 @@ public class DocumentCommandHandler {
 
   private final AccountRepository accountRepository;
   private final DocumentRepository documentRepository;
+  private final ElasticsearchClient elasticsearchClient;
   private final MailClient mailClient;
 
-  public DocumentCommandHandler(AccountRepository accountRepository,
-      DocumentRepository documentRepository, MailClient mailClient) {
+  public DocumentCommandHandler(
+      AccountRepository accountRepository,
+      DocumentRepository documentRepository,
+      ElasticsearchClient elasticsearchClient,
+      MailClient mailClient) {
     this.accountRepository = accountRepository;
     this.documentRepository = documentRepository;
+    this.elasticsearchClient = elasticsearchClient;
     this.mailClient = mailClient;
   }
 
@@ -40,6 +49,9 @@ public class DocumentCommandHandler {
         command.getTitle(), command.getContent(), command.getTags());
 
     Document savedDocument = documentRepository.save(document);
+
+    IndexPostRequest request = new IndexPostRequest(savedDocument);
+    elasticsearchClient.indexPost(request);
 
     return savedDocument.getId();
   }
@@ -52,8 +64,10 @@ public class DocumentCommandHandler {
     checkAuthority(command, document.getOwnerId());
 
     document.update(command.getTitle(), command.getContent(), command.getTags());
-
     Document savedDocument = documentRepository.save(document);
+
+    UpdatePostRequest request = new UpdatePostRequest(savedDocument);
+    elasticsearchClient.updatePost(request);
 
     return savedDocument.getId();
   }
@@ -67,6 +81,10 @@ public class DocumentCommandHandler {
 
     document.delete();
     documentRepository.delete(document);
+
+    DeletePostRequest request = new DeletePostRequest(document);
+    elasticsearchClient.deletePost(request);
+
     return Success.getInstance();
   }
 
@@ -78,6 +96,9 @@ public class DocumentCommandHandler {
         .forEach(document -> {
           document.delete();
           documentRepository.delete(document);
+
+          DeletePostRequest request = new DeletePostRequest(document);
+          elasticsearchClient.deletePost(request);
         });
 
     return Success.getInstance();
@@ -92,13 +113,16 @@ public class DocumentCommandHandler {
         .peek(document -> checkAuthority(command, document.getOwnerId()))
         .collect(Collectors.toList());
 
-    SendMailRequest request = new SendMailRequest(account.getEmail(), documents);
-    mailClient.sendMail(request);
+    SendMailRequest sendMailRequest = new SendMailRequest(account.getEmail(), documents);
+    mailClient.sendMail(sendMailRequest);
 
     if (command.isNeedToDelete()) {
       documents.forEach(document -> {
         document.delete();
         documentRepository.delete(document);
+
+        DeletePostRequest request = new DeletePostRequest(document);
+        elasticsearchClient.deletePost(request);
       });
     }
 

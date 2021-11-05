@@ -1,20 +1,20 @@
 package com.closememo.command.interfaces.client;
 
-import com.closememo.command.application.document.MailDocumentsCommand;
-import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
-import com.closememo.command.interfaces.client.requests.document.DeleteDocumentsRequest;
-import com.closememo.command.interfaces.client.requests.document.MailDocumentsRequest;
-import com.closememo.command.interfaces.client.requests.document.UpdateDocumentRequest;
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
 import com.closememo.command.application.document.CreateDocumentCommand;
 import com.closememo.command.application.document.DeleteDocumentCommand;
 import com.closememo.command.application.document.DeleteDocumentsCommand;
+import com.closememo.command.application.document.MailDocumentsCommand;
 import com.closememo.command.application.document.UpdateDocumentCommand;
 import com.closememo.command.config.openapi.apitags.DocumentApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
+import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
+import com.closememo.command.interfaces.client.requests.document.DeleteDocumentsRequest;
+import com.closememo.command.interfaces.client.requests.document.MailDocumentsRequest;
+import com.closememo.command.interfaces.client.requests.document.UpdateDocumentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Collections;
 import java.util.List;

@@ -1,0 +1,8 @@
+
+elasticsearch:
+  configs:
+    default:
+      host-name: dev.es.bitgadak.com
+      port: 9200
+      connection-timeout: 5000
+      socket-timeout: 60000
