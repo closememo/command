@@ -5,6 +5,7 @@ import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.infra.persistence.converters.StringListConverter;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -68,12 +69,14 @@ public class Document {
     validateContent(content);
     validateTags(tags);
 
+    List<String> checkedTags = checkTags(tags);
+
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Document document = new Document(documentRepository.nextId(), ownerId,
-        title, content, tags, createdAt, 1L);
+        title, content, checkedTags, createdAt, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
-        title, content, tags, createdAt));
+        title, content, checkedTags, createdAt));
     return document;
   }
 
@@ -84,12 +87,14 @@ public class Document {
     validateContent(content);
     validateTags(tags);
 
+    List<String> checkedTags = checkTags(tags);
+
     String previousContent = this.content;
     long previousVersion = this.version;
 
     this.title = title;
     this.content = content;
-    this.tags = tags;
+    this.tags = checkedTags;
     this.updatedAt = updatedAt;
     this.version += 1;
 
@@ -142,6 +147,16 @@ public class Document {
         throw new InvalidTagException("tag contains invalid characters");
       }
     }
+  }
+
+  /**
+   * 중복을 제거하고 정렬된 목록을 반환한다.
+   */
+  private static List<String> checkTags(List<String> tags) {
+    return tags.stream()
+        .distinct()
+        .sorted()
+        .collect(Collectors.toList());
   }
 
   public void delete() {
