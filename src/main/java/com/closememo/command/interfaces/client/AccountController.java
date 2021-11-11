@@ -18,6 +18,7 @@ import com.closememo.command.config.openapi.apitags.AccountApiTag;
 import com.closememo.command.domain.account.AccountId;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,7 +79,8 @@ public class AccountController {
   }
 
   @Operation(summary = "Withdraw NAVER Account")
-  @PostMapping("/withdraw-account")
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/withdraw")
   public void withdraw(@AuthenticationPrincipal AccountId accountId) {
     WidthdrawAccountCommand command =
         new WidthdrawAccountCommand(new AccountCommandRequester(accountId), accountId);

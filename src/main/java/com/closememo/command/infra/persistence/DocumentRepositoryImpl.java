@@ -43,6 +43,11 @@ public class DocumentRepositoryImpl implements DocumentRepository {
   }
 
   @Override
+  public Stream<Document> findAllByOwnerId(AccountId accountId) {
+    return documentJpaRepository.findAllByOwnerId(accountId);
+  }
+
+  @Override
   public Stream<Document> findAllByIdIn(Iterable<DocumentId> documentIds) {
     return documentJpaRepository.findAllByIdIn(documentIds);
   }

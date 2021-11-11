@@ -10,5 +10,7 @@ public interface DocumentJpaRepository extends JpaRepository<Document, DocumentI
 
   long countByOwnerId(AccountId accountId);
 
+  Stream<Document> findAllByOwnerId(AccountId accountId);
+
   Stream<Document> findAllByIdIn(Iterable<DocumentId> documentIds);
 }

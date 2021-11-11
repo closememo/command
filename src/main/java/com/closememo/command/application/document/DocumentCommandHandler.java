@@ -130,6 +130,10 @@ public class DocumentCommandHandler {
   }
 
   private static void checkAuthority(Command command, AccountId ownerId) {
+    if (command.isReliableRequester()) {
+      return;
+    }
+
     if (!command.equalsAccountRequester(ownerId)) {
       throw new AccessDeniedException();
     }
