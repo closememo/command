@@ -45,7 +45,7 @@ http:
       client-secret: ${DEV_NAVER_CLIENT_SECRET}
 
   mail:
-    root-uri: http://dev-closememo-mail.default.svc.cluster.local:10083
+    root-uri: http://dev-closememo-mailsender.default.svc.cluster.local:10083
     token: ${DEV_MAIL_TOKEN}
     read-timeout: 5000
 
@@ -63,6 +63,6 @@ http:
       client-secret: ${NAVER_CLIENT_SECRET}
 
   mail:
-    root-uri: http://closememo-mail.default.svc.cluster.local:10083
+    root-uri: http://closememo-mailsender.default.svc.cluster.local:10083
     token: ${MAIL_TOKEN}
     read-timeout: 5000
