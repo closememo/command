@@ -109,6 +109,6 @@ public class DocumentController {
     MailDocumentsCommand command = new MailDocumentsCommand(requester,
         accountId, documentIds, needToDelete);
 
-    commandGateway.request(command);
+    commandGateway.request(command, 10000);
   }
 }

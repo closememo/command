@@ -29,7 +29,7 @@ http:
   mail:
     root-uri: http://localhost:10083
     token: ${DEV_MAIL_TOKEN}
-    read-timeout: 5000
+    read-timeout: 10000
 
 ---
 
@@ -47,7 +47,7 @@ http:
   mail:
     root-uri: http://dev-closememo-mailsender.default.svc.cluster.local:10083
     token: ${DEV_MAIL_TOKEN}
-    read-timeout: 5000
+    read-timeout: 10000
 
 ---
 
@@ -65,4 +65,4 @@ http:
   mail:
     root-uri: http://closememo-mailsender.default.svc.cluster.local:10083
     token: ${MAIL_TOKEN}
-    read-timeout: 5000
+    read-timeout: 10000
