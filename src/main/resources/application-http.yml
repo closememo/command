@@ -23,12 +23,12 @@ spring:
 http:
   naver:
     auth:
-      client-id: ${DEV-NAVER-CLIENT-ID}
-      client-secret: ${DEV-NAVER-CLIENT-SECRET}
+      client-id: ${DEV_NAVER_CLIENT_ID}
+      client-secret: ${DEV_NAVER_CLIENT_SECRET}
 
   mail:
     root-uri: http://localhost:10083
-    token: ${DEV-MAIL-TOKEN}
+    token: ${DEV_MAIL_TOKEN}
     read-timeout: 5000
 
 ---
@@ -41,10 +41,28 @@ spring:
 http:
   naver:
     auth:
-      client-id: ${DEV-NAVER-CLIENT-ID}
-      client-secret: ${DEV-NAVER-CLIENT-SECRET}
+      client-id: ${DEV_NAVER_CLIENT_ID}
+      client-secret: ${DEV_NAVER_CLIENT_SECRET}
 
   mail:
-    root-uri: http://localhost:10083
-    token: ${DEV-MAIL-TOKEN}
+    root-uri: http://dev-closememo-mail.default.svc.cluster.local:10083
+    token: ${DEV_MAIL_TOKEN}
+    read-timeout: 5000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: real
+
+http:
+  naver:
+    auth:
+      client-id: ${NAVER_CLIENT_ID}
+      client-secret: ${NAVER_CLIENT_SECRET}
+
+  mail:
+    root-uri: http://closememo-mail.default.svc.cluster.local:10083
+    token: ${MAIL_TOKEN}
     read-timeout: 5000

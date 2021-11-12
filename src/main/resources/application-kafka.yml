@@ -24,4 +24,14 @@ spring:
       on-profile: dev
 
   kafka:
-    bootstrap-servers: 10.10.101.102:19092
+    bootstrap-servers: dev.kafka1.closememo.com:19092
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: real
+
+  kafka:
+    bootstrap-servers: kafka1.closememo.com:19092

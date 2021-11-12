@@ -34,8 +34,8 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mariadb://10.10.101.102:33306/command?useUnicode=true&characterEncoding=utf-8
-    username: ${DEV-DB-USERNAME}
-    password: ${DEV-DB-PASSWORD}
+    username: ${DEV_DB_USERNAME}
+    password: ${DEV_DB_PASSWORD}
 
   jpa:
     database: mysql
@@ -48,3 +48,26 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: real
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mariadb://db.closememo.com:33306/query?useUnicode=true&characterEncoding=utf-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDB103Dialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: none

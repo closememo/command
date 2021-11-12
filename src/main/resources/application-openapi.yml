@@ -11,3 +11,16 @@ springdoc:
     path: /command/swagger-ui.html
   api-docs:
     path: /command/api-docs
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: real
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
