@@ -59,7 +59,7 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mariadb://db.closememo.com:33306/query?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mariadb://db.closememo.com:33306/command?useUnicode=true&characterEncoding=utf-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
