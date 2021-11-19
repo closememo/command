@@ -11,6 +11,7 @@ public class DocumentCreatedEvent extends DomainEvent {
 
   private static final long serialVersionUID = 2468273243274846169L;
 
+  private final DocumentId documentId;
   private final AccountId ownerId;
   private final String title;
   private final String content;
@@ -21,6 +22,7 @@ public class DocumentCreatedEvent extends DomainEvent {
       String content, List<String> tags, ZonedDateTime createdAt) {
 
     super(documentId.getId(), 1);
+    this.documentId = documentId;
     this.ownerId = ownerId;
     this.title = title;
     this.content = content;

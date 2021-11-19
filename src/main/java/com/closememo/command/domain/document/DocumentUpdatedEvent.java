@@ -11,6 +11,7 @@ public class DocumentUpdatedEvent extends DomainEvent {
 
   private static final long serialVersionUID = 2468273243274846169L;
 
+  private final DocumentId documentId;
   private final AccountId ownerId;
   private final String title;
   private final String previousContent;
@@ -23,6 +24,7 @@ public class DocumentUpdatedEvent extends DomainEvent {
       String previousContent, String content, List<String> tags,
       ZonedDateTime updatedAt, long previousVersion) {
     super(documentId.getId(), 1);
+    this.documentId = documentId;
     this.ownerId = ownerId;
     this.title = title;
     this.previousContent = previousContent;

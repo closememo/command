@@ -1,6 +1,6 @@
 package com.closememo.command.infra.elasticsearch.request;
 
-import com.closememo.command.domain.document.Document;
+import com.closememo.command.domain.document.DocumentUpdatedEvent;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -14,16 +14,15 @@ public class UpdatePostRequest {
   private final String id;
   private final UpdateRequest request;
 
-  public UpdatePostRequest(Document document) {
-
-    this.id = document.getId().getId();
+  public UpdatePostRequest(DocumentUpdatedEvent event) {
+    this.id = event.getDocumentId().getId();
 
     Map<String, Object> jsonMap = new HashMap<>();
-    jsonMap.put("title", document.getTitle());
-    jsonMap.put("content", document.getContent());
-    jsonMap.put("tags", document.getTags());
+    jsonMap.put("title", event.getTitle());
+    jsonMap.put("content", event.getContent());
+    jsonMap.put("tags", event.getTags());
 
-    this.request = new UpdateRequest(INDEX_NAME, document.getId().getId())
+    this.request = new UpdateRequest(INDEX_NAME, event.getDocumentId().getId())
         .doc(jsonMap);
   }
 }
