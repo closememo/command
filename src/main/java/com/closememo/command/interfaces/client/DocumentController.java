@@ -3,6 +3,7 @@ package com.closememo.command.interfaces.client;
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
 import com.closememo.command.application.document.CreateDocumentCommand;
+import com.closememo.command.application.document.CreateLocalDocumentsCommand;
 import com.closememo.command.application.document.DeleteDocumentCommand;
 import com.closememo.command.application.document.DeleteDocumentsCommand;
 import com.closememo.command.application.document.MailDocumentsCommand;
@@ -11,6 +12,7 @@ import com.closememo.command.config.openapi.apitags.DocumentApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
+import com.closememo.command.interfaces.client.requests.document.CreateLocalDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.MailDocumentsRequest;
@@ -49,6 +51,29 @@ public class DocumentController {
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     CreateDocumentCommand command = new CreateDocumentCommand(requester, accountId,
         title, request.getContent(), tags);
+
+    return commandGateway.request(command);
+  }
+
+  @Operation(summary = "Create Local Document")
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/create-local-documents")
+  public List<DocumentId> createLocalDocuments(@RequestBody @Valid CreateLocalDocumentsRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    AccountCommandRequester requester = new AccountCommandRequester(accountId);
+
+    List<CreateLocalDocumentsCommand.LocalDocument> localDocuments =
+        request.getLocalDocuments().stream()
+            .map(document -> {
+              String title = Optional.ofNullable(document.getTitle()).orElse(StringUtils.EMPTY);
+              return new CreateLocalDocumentsCommand.LocalDocument(
+                  title, document.getContent(), document.getLocalFormedDateString());
+            })
+            .collect(Collectors.toList());
+
+    CreateLocalDocumentsCommand command =
+        new CreateLocalDocumentsCommand(requester, accountId, localDocuments);
 
     return commandGateway.request(command);
   }

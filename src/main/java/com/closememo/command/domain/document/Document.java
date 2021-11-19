@@ -4,6 +4,7 @@ import com.closememo.command.domain.Events;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.infra.persistence.converters.StringListConverter;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
@@ -77,6 +78,22 @@ public class Document {
         title, content, checkedTags, createdAt, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
         title, content, checkedTags, createdAt));
+    return document;
+  }
+
+  public static Document newLocalOne(DocumentRepository documentRepository, AccountId ownerId,
+      @NonNull String title, String content, ZonedDateTime createdAt) {
+
+    validateDocumentLimit(documentRepository, ownerId);
+    validateTitle(title);
+    validateContent(content);
+
+    List<String> localTags = Collections.singletonList("오프라인");
+
+    Document document = new Document(documentRepository.nextId(), ownerId,
+        title, content, localTags, createdAt, 1L);
+    Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
+        title, content, localTags, createdAt));
     return document;
   }
 
