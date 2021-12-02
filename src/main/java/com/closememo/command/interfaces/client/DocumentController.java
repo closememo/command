@@ -11,6 +11,7 @@ import com.closememo.command.application.document.UpdateDocumentCommand;
 import com.closememo.command.config.openapi.apitags.DocumentApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.document.DocumentId;
+import com.closememo.command.infra.projection.WaitForProjection;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
 import com.closememo.command.interfaces.client.requests.document.CreateLocalDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
@@ -39,6 +40,7 @@ public class DocumentController {
     this.commandGateway = commandGateway;
   }
 
+  @WaitForProjection
   @Operation(summary = "Create Document")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/create-document")
@@ -55,6 +57,7 @@ public class DocumentController {
     return commandGateway.request(command);
   }
 
+  @WaitForProjection
   @Operation(summary = "Create Local Document")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/create-local-documents")
@@ -78,6 +81,7 @@ public class DocumentController {
     return commandGateway.request(command);
   }
 
+  @WaitForProjection
   @Operation(summary = "Update Document")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/update-document")
@@ -92,6 +96,7 @@ public class DocumentController {
     return commandGateway.request(command);
   }
 
+  @WaitForProjection
   @Operation(summary = "Delete Document")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/delete-document")
@@ -105,6 +110,7 @@ public class DocumentController {
     commandGateway.request(command);
   }
 
+  @WaitForProjection
   @Operation(summary = "Delete Documents")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/delete-documents")
