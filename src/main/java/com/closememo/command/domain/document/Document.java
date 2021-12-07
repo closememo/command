@@ -45,6 +45,9 @@ public class Document {
   @Column(columnDefinition = "JSON")
   @Convert(converter = StringListConverter.class)
   private List<String> tags;
+  @Column(columnDefinition = "JSON")
+  @Convert(converter = StringListConverter.class)
+  private List<String> autoTags;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
   private ZonedDateTime updatedAt;
@@ -52,12 +55,13 @@ public class Document {
   private long version;
 
   public Document(DocumentId id, AccountId ownerId, String title, String content, List<String> tags,
-      ZonedDateTime createdAt, long version) {
+      List<String> autoTags, ZonedDateTime createdAt, long version) {
     this.id = id;
     this.ownerId = ownerId;
     this.title = title;
     this.content = content;
     this.tags = tags;
+    this.autoTags = autoTags;
     this.createdAt = createdAt;
     this.version = version;
   }
@@ -75,7 +79,7 @@ public class Document {
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Document document = new Document(documentRepository.nextId(), ownerId,
-        title, content, checkedTags, createdAt, 1L);
+        title, content, checkedTags, Collections.emptyList(), createdAt, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
         title, content, checkedTags, createdAt));
     return document;
@@ -91,7 +95,7 @@ public class Document {
     List<String> localTags = Collections.singletonList("오프라인");
 
     Document document = new Document(documentRepository.nextId(), ownerId,
-        title, content, localTags, createdAt, 1L);
+        title, content, localTags, Collections.emptyList(), createdAt, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
         title, content, localTags, createdAt));
     return document;
@@ -117,6 +121,14 @@ public class Document {
 
     Events.register(new DocumentUpdatedEvent(this.id, this.ownerId, this.title, previousContent,
         this.content, this.tags, updatedAt, previousVersion));
+  }
+
+  public void updateAutoTags(List<String> autoTags) {
+    validateTags(autoTags);
+
+    this.autoTags = autoTags;
+
+    Events.register(new AutoTagsUpdatedEvent(this.id, this.autoTags));
   }
 
   private static void validateDocumentLimit(DocumentRepository documentRepository,

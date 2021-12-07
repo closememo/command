@@ -148,6 +148,20 @@ public class DocumentCommandHandler {
     return Success.getInstance();
   }
 
+  @Transactional
+  @ServiceActivator(inputChannel = "UpdateAutoTagsCommand")
+  public Success handle(UpdateAutoTagsCommand command) {
+    if (!command.isSystemRequester()) {
+      throw new AccessDeniedException();
+    }
+
+    Document document = documentRepository.findById(command.getDocumentId())
+        .orElseThrow(DocumentNotFoundException::new);
+    document.updateAutoTags(command.getAutoTags());
+
+    return Success.getInstance();
+  }
+
   private static void checkAuthority(Command command, AccountId ownerId) {
     if (command.isReliableRequester()) {
       return;
