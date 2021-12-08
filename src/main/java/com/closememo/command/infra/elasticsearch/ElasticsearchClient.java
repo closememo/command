@@ -1,8 +1,8 @@
 package com.closememo.command.infra.elasticsearch;
 
-import com.closememo.command.infra.elasticsearch.request.DeletePostRequest;
-import com.closememo.command.infra.elasticsearch.request.IndexPostRequest;
-import com.closememo.command.infra.elasticsearch.request.UpdatePostRequest;
+import com.closememo.command.infra.elasticsearch.request.interfaces.DeleteESRequest;
+import com.closememo.command.infra.elasticsearch.request.interfaces.IndexESRequest;
+import com.closememo.command.infra.elasticsearch.request.interfaces.UpdateESRequest;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -23,11 +23,11 @@ public class ElasticsearchClient {
     this.client = client;
   }
 
-  public void indexPost(IndexPostRequest indexPostRequest) {
-    log.debug("[ELASTICSEARCH] request: " + indexPostRequest.getRequest().toString());
+  public void index(IndexESRequest request) {
+    log.debug("[ELASTICSEARCH] request: " + request.getRequest().toString());
     IndexResponse response;
     try {
-      response = client.index(indexPostRequest.getRequest(), RequestOptions.DEFAULT);
+      response = client.index(request.getRequest(), RequestOptions.DEFAULT);
     } catch (IOException e) {
       throw new ElasticsearchClientException();
     }
@@ -37,31 +37,31 @@ public class ElasticsearchClient {
     }
   }
 
-  public void updatePost(UpdatePostRequest updatePostRequest) {
-    log.debug("[ELASTICSEARCH] request: " + updatePostRequest.getRequest().toString());
+  public void update(UpdateESRequest request) {
+    log.debug("[ELASTICSEARCH] request: " + request.getRequest().toString());
     UpdateResponse response;
     try {
-      response = client.update(updatePostRequest.getRequest(), RequestOptions.DEFAULT);
+      response = client.update(request.getRequest(), RequestOptions.DEFAULT);
     } catch (IOException e) {
       throw new ElasticsearchClientException();
     }
     log.debug("[ELASTICSEARCH] response: " + response.toString());
     if (RestStatus.NOT_FOUND.equals(response.status())) {
-      log.warn("Document does not exist. id=" + updatePostRequest.getId());
+      log.warn("Document does not exist. id=" + request.getId());
     }
   }
 
-  public void deletePost(DeletePostRequest deletePostRequest) {
-    log.debug("[ELASTICSEARCH] request: " + deletePostRequest.getRequest().toString());
+  public void delete(DeleteESRequest request) {
+    log.debug("[ELASTICSEARCH] request: " + request.getRequest().toString());
     DeleteResponse response;
     try {
-      response = client.delete(deletePostRequest.getRequest(), RequestOptions.DEFAULT);
+      response = client.delete(request.getRequest(), RequestOptions.DEFAULT);
     } catch (IOException e) {
       throw new ElasticsearchClientException();
     }
     log.debug("[ELASTICSEARCH] response: " + response.toString());
     if (RestStatus.NOT_FOUND.equals(response.status())) {
-      log.warn("Document does not exist. id=" + deletePostRequest.getId());
+      log.warn("Document does not exist. id=" + request.getId());
     }
   }
 }

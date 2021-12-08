@@ -128,7 +128,7 @@ public class Document {
 
     this.autoTags = autoTags;
 
-    Events.register(new AutoTagsUpdatedEvent(this.id, this.autoTags));
+    Events.register(new AutoTagsUpdatedEvent(this.id, this.ownerId, this.autoTags));
   }
 
   private static void validateDocumentLimit(DocumentRepository documentRepository,

@@ -1,13 +1,13 @@
 package com.closememo.command.infra.elasticsearch.request;
 
 import com.closememo.command.domain.document.DocumentDeletedEvent;
+import com.closememo.command.infra.elasticsearch.request.interfaces.DeleteESRequest;
+import com.closememo.command.infra.elasticsearch.request.interfaces.PostESRequest;
 import lombok.Getter;
 import org.elasticsearch.action.delete.DeleteRequest;
 
 @Getter
-public class DeletePostRequest {
-
-  private static final String INDEX_NAME = "post";
+public class DeletePostRequest implements DeleteESRequest, PostESRequest {
 
   private final String id;
   private final DeleteRequest request;
