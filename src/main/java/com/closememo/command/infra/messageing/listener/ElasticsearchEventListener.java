@@ -5,10 +5,11 @@ import com.closememo.command.domain.document.DocumentCreatedEvent;
 import com.closememo.command.domain.document.DocumentDeletedEvent;
 import com.closememo.command.domain.document.DocumentUpdatedEvent;
 import com.closememo.command.infra.elasticsearch.ElasticsearchClient;
+import com.closememo.command.infra.elasticsearch.request.DeleteAutoTagRequest;
 import com.closememo.command.infra.elasticsearch.request.DeletePostRequest;
-import com.closememo.command.infra.elasticsearch.request.IndexAutoTagRequest;
 import com.closememo.command.infra.elasticsearch.request.IndexPostRequest;
 import com.closememo.command.infra.elasticsearch.request.UpdatePostRequest;
+import com.closememo.command.infra.elasticsearch.request.UpsertAutoTagRequest;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +37,16 @@ public class ElasticsearchEventListener {
 
   @ServiceActivator(inputChannel = "DocumentDeletedEvent")
   public void handle(DocumentDeletedEvent payload) {
-    DeletePostRequest request = new DeletePostRequest(payload);
-    elasticsearchClient.delete(request);
+    DeletePostRequest deletePostRequest = new DeletePostRequest(payload);
+    DeleteAutoTagRequest deleteAutoTagRequest = new DeleteAutoTagRequest(payload);
+
+    elasticsearchClient.delete(deletePostRequest);
+    elasticsearchClient.delete(deleteAutoTagRequest);
   }
 
   @ServiceActivator(inputChannel = "AutoTagsUpdatedEvent")
   public void handle(AutoTagsUpdatedEvent payload) {
-    IndexAutoTagRequest request = new IndexAutoTagRequest(payload);
-    elasticsearchClient.index(request);
+    UpsertAutoTagRequest request = new UpsertAutoTagRequest(payload);
+    elasticsearchClient.update(request);
   }
 }
