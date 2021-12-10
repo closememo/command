@@ -11,4 +11,10 @@ public class CreateDocumentRequest {
   @NotBlank
   private String content;
   private List<String> tags;
+  private DocumentOption option;
+
+  @Getter
+  public static class DocumentOption {
+    private Boolean hasAutoTag;
+  }
 }

@@ -18,11 +18,13 @@ public class DocumentUpdatedEvent extends DomainEvent {
   private final String content;
   private final List<String> tags;
   private final ZonedDateTime updatedAt;
+  private final DocumentOption previousOption;
+  private final DocumentOption option;
   private final long previousVersion;
 
   public DocumentUpdatedEvent(DocumentId documentId, AccountId ownerId, String title,
-      String previousContent, String content, List<String> tags,
-      ZonedDateTime updatedAt, long previousVersion) {
+      String previousContent, String content, List<String> tags, ZonedDateTime updatedAt,
+      DocumentOption previousOption, DocumentOption option, long previousVersion) {
     super(documentId.getId(), 1);
     this.documentId = documentId;
     this.ownerId = ownerId;
@@ -31,6 +33,8 @@ public class DocumentUpdatedEvent extends DomainEvent {
     this.content = content;
     this.tags = tags;
     this.updatedAt = updatedAt;
+    this.previousOption = previousOption;
+    this.option = option;
     this.previousVersion = previousVersion;
   }
 }

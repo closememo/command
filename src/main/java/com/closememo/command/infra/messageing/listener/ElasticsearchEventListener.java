@@ -33,6 +33,11 @@ public class ElasticsearchEventListener {
   public void handle(DocumentUpdatedEvent payload) {
     UpdatePostRequest request = new UpdatePostRequest(payload);
     elasticsearchClient.update(request);
+
+    if (!payload.getOption().isHasAutoTag()) {
+      DeleteAutoTagRequest deleteAutoTagRequest = new DeleteAutoTagRequest(payload);
+      elasticsearchClient.delete(deleteAutoTagRequest);
+    }
   }
 
   @ServiceActivator(inputChannel = "DocumentDeletedEvent")

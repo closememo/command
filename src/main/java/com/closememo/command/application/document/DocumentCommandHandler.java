@@ -10,6 +10,7 @@ import com.closememo.command.domain.account.AccountRepository;
 import com.closememo.command.domain.document.Document;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.domain.document.DocumentNotFoundException;
+import com.closememo.command.domain.document.DocumentOption;
 import com.closememo.command.domain.document.DocumentRepository;
 import com.closememo.command.infra.http.mail.MailClient;
 import com.closememo.command.infra.http.mail.SendMailRequest;
@@ -45,8 +46,10 @@ public class DocumentCommandHandler {
   @Transactional
   @ServiceActivator(inputChannel = "CreateDocumentCommand")
   public DocumentId handle(CreateDocumentCommand command) {
+    DocumentOption option = new DocumentOption(command.getOption().getHasAutoTag());
+
     Document document = Document.newOne(documentRepository, command.getOwnerId(),
-        command.getTitle(), command.getContent(), command.getTags());
+        command.getTitle(), command.getContent(), command.getTags(), option);
 
     Document savedDocument = documentRepository.save(document);
     return savedDocument.getId();
@@ -90,11 +93,13 @@ public class DocumentCommandHandler {
   @Transactional
   @ServiceActivator(inputChannel = "UpdateDocumentCommand")
   public DocumentId handle(UpdateDocumentCommand command) {
+    DocumentOption option = new DocumentOption(command.getOption().getHasAutoTag());
+
     Document document = documentRepository.findById(command.getDocumentId())
         .orElseThrow(DocumentNotFoundException::new);
     checkAuthority(command, document.getOwnerId());
 
-    document.update(command.getTitle(), command.getContent(), command.getTags());
+    document.update(command.getTitle(), command.getContent(), command.getTags(), option);
     Document savedDocument = documentRepository.save(document);
 
     return savedDocument.getId();
@@ -157,7 +162,10 @@ public class DocumentCommandHandler {
 
     Document document = documentRepository.findById(command.getDocumentId())
         .orElseThrow(DocumentNotFoundException::new);
-    document.updateAutoTags(command.getAutoTags());
+
+    if (document.getOption().isHasAutoTag()) {
+      document.updateAutoTags(command.getAutoTags());
+    }
 
     return Success.getInstance();
   }

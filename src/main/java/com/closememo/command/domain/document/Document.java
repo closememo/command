@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -51,11 +52,13 @@ public class Document {
   @Column(nullable = false)
   private ZonedDateTime createdAt;
   private ZonedDateTime updatedAt;
+  @Embedded
+  private DocumentOption option;
   @Column(nullable = false)
   private long version;
 
   public Document(DocumentId id, AccountId ownerId, String title, String content, List<String> tags,
-      List<String> autoTags, ZonedDateTime createdAt, long version) {
+      List<String> autoTags, ZonedDateTime createdAt, DocumentOption option, long version) {
     this.id = id;
     this.ownerId = ownerId;
     this.title = title;
@@ -63,11 +66,12 @@ public class Document {
     this.tags = tags;
     this.autoTags = autoTags;
     this.createdAt = createdAt;
+    this.option = option;
     this.version = version;
   }
 
   public static Document newOne(DocumentRepository documentRepository, AccountId ownerId,
-      @NonNull String title, String content, @NonNull List<String> tags) {
+      @NonNull String title, String content, @NonNull List<String> tags, DocumentOption option) {
 
     validateDocumentLimit(documentRepository, ownerId);
     validateTitle(title);
@@ -79,9 +83,9 @@ public class Document {
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Document document = new Document(documentRepository.nextId(), ownerId,
-        title, content, checkedTags, Collections.emptyList(), createdAt, 1L);
+        title, content, checkedTags, Collections.emptyList(), createdAt, option, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
-        title, content, checkedTags, createdAt));
+        title, content, checkedTags, createdAt, option));
     return document;
   }
 
@@ -93,15 +97,16 @@ public class Document {
     validateContent(content);
 
     List<String> localTags = Collections.singletonList("오프라인");
+    DocumentOption option = new DocumentOption(true);
 
     Document document = new Document(documentRepository.nextId(), ownerId,
-        title, content, localTags, Collections.emptyList(), createdAt, 1L);
+        title, content, localTags, Collections.emptyList(), createdAt, option, 1L);
     Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
-        title, content, localTags, createdAt));
+        title, content, localTags, createdAt, option));
     return document;
   }
 
-  public void update(String title, String content, List<String> tags) {
+  public void update(String title, String content, List<String> tags, DocumentOption option) {
     ZonedDateTime updatedAt = ZonedDateTime.now();
 
     validateTitle(title);
@@ -112,15 +117,21 @@ public class Document {
 
     String previousContent = this.content;
     long previousVersion = this.version;
+    DocumentOption previousOption = this.option;
 
     this.title = title;
     this.content = content;
     this.tags = checkedTags;
     this.updatedAt = updatedAt;
+    this.option = option;
     this.version += 1;
 
+    if (!this.option.isHasAutoTag()) {
+      this.autoTags = Collections.emptyList();
+    }
+
     Events.register(new DocumentUpdatedEvent(this.id, this.ownerId, this.title, previousContent,
-        this.content, this.tags, updatedAt, previousVersion));
+        this.content, this.tags, updatedAt, previousOption, this.option, previousVersion));
   }
 
   public void updateAutoTags(List<String> autoTags) {

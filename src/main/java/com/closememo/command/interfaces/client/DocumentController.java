@@ -52,7 +52,7 @@ public class DocumentController {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     CreateDocumentCommand command = new CreateDocumentCommand(requester, accountId,
-        title, request.getContent(), tags);
+        title, request.getContent(), tags, request.getOption());
 
     return commandGateway.request(command);
   }
@@ -91,7 +91,7 @@ public class DocumentController {
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     DocumentId documentId = new DocumentId(request.getDocumentId());
     UpdateDocumentCommand command = new UpdateDocumentCommand(requester, documentId,
-        request.getTitle(), request.getContent(), request.getTags());
+        request.getTitle(), request.getContent(), request.getTags(), request.getOption());
 
     return commandGateway.request(command);
   }
