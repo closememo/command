@@ -12,13 +12,11 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "differences")
-@EqualsAndHashCode
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Difference {
@@ -35,7 +33,7 @@ public class Difference {
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
-  public Difference(DifferenceId id, DocumentId documentId, long documentVersion,
+  private Difference(DifferenceId id, DocumentId documentId, long documentVersion,
       List<LineDelta> lineDeltas, ZonedDateTime createdAt) {
     this.id = id;
     this.documentId = documentId;

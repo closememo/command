@@ -15,7 +15,6 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,7 +22,6 @@ import org.springframework.lang.NonNull;
 
 @Entity
 @Table(name = "documents")
-@EqualsAndHashCode
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Document {
@@ -57,7 +55,7 @@ public class Document {
   @Column(nullable = false)
   private long version;
 
-  public Document(DocumentId id, AccountId ownerId, String title, String content, List<String> tags,
+  private Document(DocumentId id, AccountId ownerId, String title, String content, List<String> tags,
       List<String> autoTags, ZonedDateTime createdAt, DocumentOption option, long version) {
     this.id = id;
     this.ownerId = ownerId;

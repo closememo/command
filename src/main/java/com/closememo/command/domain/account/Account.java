@@ -63,7 +63,7 @@ public class Account {
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
-  public Account(AccountId id, Social social, String socialId, String email,
+  private Account(AccountId id, Social social, String socialId, String email,
       List<Token> tokens, Set<Role> roles, ZonedDateTime createdAt) {
     this.id = id;
     this.social = social;
