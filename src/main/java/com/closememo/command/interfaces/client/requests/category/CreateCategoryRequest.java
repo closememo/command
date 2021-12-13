@@ -1,0 +1,11 @@
+package com.closememo.command.interfaces.client.requests.category;
+
+import javax.validation.constraints.NotBlank;
+import lombok.Getter;
+
+@Getter
+public class CreateCategoryRequest {
+
+  @NotBlank
+  private String name;
+}
