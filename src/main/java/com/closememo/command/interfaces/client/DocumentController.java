@@ -10,6 +10,8 @@ import com.closememo.command.application.document.MailDocumentsCommand;
 import com.closememo.command.application.document.UpdateDocumentCommand;
 import com.closememo.command.config.openapi.apitags.DocumentApiTag;
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.domain.category.Category;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.infra.projection.WaitForProjection;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
@@ -47,12 +49,16 @@ public class DocumentController {
   public DocumentId createDocument(@RequestBody @Valid CreateDocumentRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
+    CategoryId categoryId = StringUtils.isNotBlank(request.getCategoryId())
+        ? new CategoryId(request.getCategoryId())
+        : null;
+
     String title = Optional.ofNullable(request.getTitle()).orElse(StringUtils.EMPTY);
     List<String> tags = Optional.ofNullable(request.getTags()).orElse(Collections.emptyList());
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     CreateDocumentCommand command = new CreateDocumentCommand(requester, accountId,
-        title, request.getContent(), tags, request.getOption());
+        categoryId, title, request.getContent(), tags, request.getOption());
 
     return commandGateway.request(command);
   }
@@ -61,7 +67,8 @@ public class DocumentController {
   @Operation(summary = "Create Local Document")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/create-local-documents")
-  public List<DocumentId> createLocalDocuments(@RequestBody @Valid CreateLocalDocumentsRequest request,
+  public List<DocumentId> createLocalDocuments(
+      @RequestBody @Valid CreateLocalDocumentsRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);

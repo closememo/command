@@ -41,7 +41,8 @@ public class CategoryController {
     String name = Optional.ofNullable(request.getName()).orElse(StringUtils.EMPTY);
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
-    CreateCategoryCommand command = new CreateCategoryCommand(requester, accountId, name);
+    CategoryId parentId = new CategoryId(request.getParentId());
+    CreateCategoryCommand command = new CreateCategoryCommand(requester, accountId, name, parentId);
 
     return commandGateway.request(command);
   }

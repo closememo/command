@@ -7,6 +7,9 @@ import com.closememo.command.domain.account.Account;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.account.AccountNotFoundException;
 import com.closememo.command.domain.account.AccountRepository;
+import com.closememo.command.domain.category.Category;
+import com.closememo.command.domain.category.CategoryNotFoundException;
+import com.closememo.command.domain.category.CategoryRepository;
 import com.closememo.command.domain.document.Document;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.domain.document.DocumentNotFoundException;
@@ -31,14 +34,17 @@ public class DocumentCommandHandler {
       Pattern.compile("^(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})$");
 
   private final AccountRepository accountRepository;
+  private final CategoryRepository categoryRepository;
   private final DocumentRepository documentRepository;
   private final MailClient mailClient;
 
   public DocumentCommandHandler(
       AccountRepository accountRepository,
+      CategoryRepository categoryRepository,
       DocumentRepository documentRepository,
       MailClient mailClient) {
     this.accountRepository = accountRepository;
+    this.categoryRepository = categoryRepository;
     this.documentRepository = documentRepository;
     this.mailClient = mailClient;
   }
@@ -49,7 +55,7 @@ public class DocumentCommandHandler {
     DocumentOption option = new DocumentOption(command.getOption().getHasAutoTag());
 
     Document document = Document.newOne(documentRepository, command.getOwnerId(),
-        command.getTitle(), command.getContent(), command.getTags(), option);
+        command.getCategoryId(), command.getTitle(), command.getContent(), command.getTags(), option);
 
     Document savedDocument = documentRepository.save(document);
     return savedDocument.getId();
@@ -59,11 +65,14 @@ public class DocumentCommandHandler {
   @ServiceActivator(inputChannel = "CreateLocalDocumentsCommand")
   public List<DocumentId> handle(CreateLocalDocumentsCommand command) {
 
+    Category category = categoryRepository.findRootCategory()
+        .orElseThrow(CategoryNotFoundException::new);
+
     return command.getLocalDocuments().stream()
         .map(localDocument -> {
           ZonedDateTime createdAt = from(localDocument.getLocalFormedDateString());
           Document document = Document.newLocalOne(documentRepository, command.getOwnerId(),
-              localDocument.getTitle(), localDocument.getContent(), createdAt);
+              category.getId(), localDocument.getTitle(), localDocument.getContent(), createdAt);
 
           Document savedDocument = documentRepository.save(document);
           return savedDocument.getId();

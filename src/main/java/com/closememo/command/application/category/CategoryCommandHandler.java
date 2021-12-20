@@ -23,10 +23,21 @@ public class CategoryCommandHandler {
   }
 
   @Transactional
+  @ServiceActivator(inputChannel = "CreateRootCategoryCommand")
+  public CategoryId handle(CreateRootCategoryCommand command) {
+    Category category = Category.newRootCategory(categoryRepository.nextId(), command.getOwnerId());
+    Category savedCategory = categoryRepository.save(category);
+    return savedCategory.getId();
+  }
+
+  @Transactional
   @ServiceActivator(inputChannel = "CreateCategoryCommand")
   public CategoryId handle(CreateCategoryCommand command) {
+    Category parentCategory = categoryRepository.findById(command.getParentId())
+        .orElseThrow(CategoryNotFoundException::new);
+
     Category category = Category.newOne(categoryRepository,
-        command.getOwnerId(), command.getName());
+        command.getOwnerId(), command.getName(), parentCategory);
     checkAuthority(command, category.getOwnerId());
 
     Category savedCategory = categoryRepository.save(category);

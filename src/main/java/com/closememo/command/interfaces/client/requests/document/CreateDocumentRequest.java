@@ -7,6 +7,8 @@ import lombok.Getter;
 @Getter
 public class CreateDocumentRequest {
 
+  @NotBlank
+  private String categoryId;
   private String title;
   @NotBlank
   private String content;

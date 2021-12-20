@@ -13,13 +13,19 @@ public class CategoryCreatedEvent extends DomainEvent {
   private final AccountId ownerId;
   private final String name;
   private final ZonedDateTime createdAt;
+  private final Boolean isRoot;
+  private final CategoryId parentId;
+  private final Integer depth;
 
-  public CategoryCreatedEvent(CategoryId categoryId, AccountId ownerId,
-      String name, ZonedDateTime createdAt) {
+  public CategoryCreatedEvent(CategoryId categoryId, AccountId ownerId, String name,
+      ZonedDateTime createdAt, boolean isRoot, CategoryId parentId, int depth) {
 
     super(categoryId.getId(), 1);
     this.ownerId = ownerId;
     this.name = name;
     this.createdAt = createdAt;
+    this.isRoot = isRoot;
+    this.parentId = parentId;
+    this.depth = depth;
   }
 }

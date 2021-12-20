@@ -25,6 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
+  private static final String ROOT_NAME = StringUtils.EMPTY;
+  private static final int NUMBER_OF_CATEGORY_LIMIT = 100;
+  private static final int MAX_CATEGORY_DEPTH = 3;
   private static final int MAX_NAME_LENGTH = 100;
 
   @EmbeddedId
@@ -35,23 +38,47 @@ public class Category {
   private String name;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
+  private Boolean isRoot;
+  @AttributeOverride(name = "id", column = @Column(name = "parentId"))
+  private CategoryId parentId;
+  private int depth;
 
-  private Category(CategoryId id, AccountId ownerId, String name, ZonedDateTime createdAt) {
+  private Category(CategoryId id, AccountId ownerId, String name, ZonedDateTime createdAt,
+      Boolean isRoot, CategoryId parentId, int depth) {
     this.id = id;
     this.ownerId = ownerId;
     this.name = name;
     this.createdAt = createdAt;
+    this.isRoot = isRoot;
+    this.parentId = parentId;
+    this.depth = depth;
+  }
+
+  public static Category newRootCategory(CategoryId id, AccountId ownerId) {
+    ZonedDateTime createdAt = ZonedDateTime.now();
+
+    Category category = new Category(id, ownerId, ROOT_NAME, createdAt,
+        true, null, 0);
+    Events.register(new CategoryCreatedEvent(category.getId(), ownerId, ROOT_NAME, createdAt,
+        true, null, 0));
+    return category;
   }
 
   public static Category newOne(CategoryRepository categoryRepository,
-      AccountId ownerId, String name) {
-
-    validateName(categoryRepository, ownerId, name);
+      AccountId ownerId, String name, Category parentCategory) {
 
     ZonedDateTime createdAt = ZonedDateTime.now();
+    CategoryId parentId = parentCategory.getId();
+    int depth = parentCategory.getDepth() + 1;
 
-    Category category = new Category(categoryRepository.nextId(), ownerId, name, createdAt);
-    Events.register(new CategoryCreatedEvent(category.getId(), ownerId, name, createdAt));
+    validateCategoryLimit(categoryRepository, ownerId);
+    validateName(categoryRepository, ownerId, name);
+    validateDepth(depth);
+
+    Category category = new Category(categoryRepository.nextId(), ownerId, name, createdAt,
+        false, parentCategory.getId(), parentCategory.getDepth() + 1);
+    Events.register(new CategoryCreatedEvent(category.getId(), ownerId, name, createdAt,
+        false, parentId, depth));
     return category;
   }
 
@@ -62,6 +89,14 @@ public class Category {
     this.name = name;
 
     Events.register(new CategoryUpdatedEvent(this.id, name));
+  }
+
+  private static void validateCategoryLimit(CategoryRepository categoryRepository,
+      AccountId ownerId) {
+    if (categoryRepository.countByOwnerId(ownerId) >= NUMBER_OF_CATEGORY_LIMIT) {
+      throw new CategoryCountLimitExceededException(
+          String.format("the number of documents cannot exceed %d", NUMBER_OF_CATEGORY_LIMIT));
+    }
   }
 
   private static void validateName(CategoryRepository categoryRepository,
@@ -78,6 +113,13 @@ public class Category {
     if (name.length() > MAX_NAME_LENGTH) {
       throw new InvalidCategoryNameException(
           String.format("category name cannot exceed %d characters", MAX_NAME_LENGTH));
+    }
+  }
+
+  private static void validateDepth(int depth) {
+    if (depth > MAX_CATEGORY_DEPTH) {
+      throw new CategoryDepthLimitExceededException(
+          String.format("category depth cannot exceed %d characters", MAX_CATEGORY_DEPTH));
     }
   }
 

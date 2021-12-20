@@ -2,6 +2,7 @@ package com.closememo.command.domain.document;
 
 import com.closememo.command.domain.Events;
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.infra.persistence.converters.StringListConverter;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -37,6 +38,8 @@ public class Document {
   private DocumentId id;
   @AttributeOverride(name = "id", column = @Column(name = "ownerId", nullable = false))
   private AccountId ownerId;
+  @AttributeOverride(name = "id", column = @Column(name = "categoryId", nullable = false))
+  private CategoryId categoryId;
   @Column(columnDefinition = "VARCHAR(150)")
   private String title;
   @Column(nullable = false, columnDefinition = "LONGTEXT")
@@ -55,10 +58,13 @@ public class Document {
   @Column(nullable = false)
   private long version;
 
-  private Document(DocumentId id, AccountId ownerId, String title, String content, List<String> tags,
-      List<String> autoTags, ZonedDateTime createdAt, DocumentOption option, long version) {
+  private Document(DocumentId id, AccountId ownerId, CategoryId categoryId, String title,
+      String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
+      DocumentOption option, long version) {
+
     this.id = id;
     this.ownerId = ownerId;
+    this.categoryId = categoryId;
     this.title = title;
     this.content = content;
     this.tags = tags;
@@ -69,7 +75,8 @@ public class Document {
   }
 
   public static Document newOne(DocumentRepository documentRepository, AccountId ownerId,
-      @NonNull String title, String content, @NonNull List<String> tags, DocumentOption option) {
+      CategoryId categoryId, @NonNull String title, String content,
+      @NonNull List<String> tags, DocumentOption option) {
 
     validateDocumentLimit(documentRepository, ownerId);
     validateTitle(title);
@@ -80,15 +87,15 @@ public class Document {
 
     ZonedDateTime createdAt = ZonedDateTime.now();
 
-    Document document = new Document(documentRepository.nextId(), ownerId,
+    Document document = new Document(documentRepository.nextId(), ownerId, categoryId,
         title, content, checkedTags, Collections.emptyList(), createdAt, option, 1L);
-    Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
+    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId,
         title, content, checkedTags, createdAt, option));
     return document;
   }
 
   public static Document newLocalOne(DocumentRepository documentRepository, AccountId ownerId,
-      @NonNull String title, String content, ZonedDateTime createdAt) {
+      CategoryId categoryId, @NonNull String title, String content, ZonedDateTime createdAt) {
 
     validateDocumentLimit(documentRepository, ownerId);
     validateTitle(title);
@@ -97,9 +104,9 @@ public class Document {
     List<String> localTags = Collections.singletonList("오프라인");
     DocumentOption option = new DocumentOption(true);
 
-    Document document = new Document(documentRepository.nextId(), ownerId,
+    Document document = new Document(documentRepository.nextId(), ownerId, categoryId,
         title, content, localTags, Collections.emptyList(), createdAt, option, 1L);
-    Events.register(new DocumentCreatedEvent(document.getId(), ownerId,
+    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId,
         title, content, localTags, createdAt, option));
     return document;
   }
