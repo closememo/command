@@ -8,6 +8,7 @@ import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.account.AccountNotFoundException;
 import com.closememo.command.domain.account.AccountRepository;
 import com.closememo.command.domain.category.Category;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.category.CategoryNotFoundException;
 import com.closememo.command.domain.category.CategoryRepository;
 import com.closememo.command.domain.document.Document;
@@ -65,14 +66,16 @@ public class DocumentCommandHandler {
   @ServiceActivator(inputChannel = "CreateLocalDocumentsCommand")
   public List<DocumentId> handle(CreateLocalDocumentsCommand command) {
 
+    // TODO: 이후 root category 가 없으면 예외 처리하도록 수정
     Category category = categoryRepository.findRootCategory()
-        .orElseThrow(CategoryNotFoundException::new);
+        .orElse(null);
+    CategoryId categoryId = category != null ? category.getId() : null;
 
     return command.getLocalDocuments().stream()
         .map(localDocument -> {
           ZonedDateTime createdAt = from(localDocument.getLocalFormedDateString());
           Document document = Document.newLocalOne(documentRepository, command.getOwnerId(),
-              category.getId(), localDocument.getTitle(), localDocument.getContent(), createdAt);
+              categoryId, localDocument.getTitle(), localDocument.getContent(), createdAt);
 
           Document savedDocument = documentRepository.save(document);
           return savedDocument.getId();

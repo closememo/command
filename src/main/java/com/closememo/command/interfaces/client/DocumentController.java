@@ -49,6 +49,7 @@ public class DocumentController {
   public DocumentId createDocument(@RequestBody @Valid CreateDocumentRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
+    // TODO: 이후 categoryId 가 항상 존재하도록 수정
     CategoryId categoryId = StringUtils.isNotBlank(request.getCategoryId())
         ? new CategoryId(request.getCategoryId())
         : null;

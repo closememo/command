@@ -38,7 +38,7 @@ public class Document {
   private DocumentId id;
   @AttributeOverride(name = "id", column = @Column(name = "ownerId", nullable = false))
   private AccountId ownerId;
-  @AttributeOverride(name = "id", column = @Column(name = "categoryId", nullable = false))
+  @AttributeOverride(name = "id", column = @Column(name = "categoryId")) // TODO: 이후 nullable = false 처리
   private CategoryId categoryId;
   @Column(columnDefinition = "VARCHAR(150)")
   private String title;
