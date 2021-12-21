@@ -55,8 +55,18 @@ public class DocumentCommandHandler {
   public DocumentId handle(CreateDocumentCommand command) {
     DocumentOption option = new DocumentOption(command.getOption().getHasAutoTag());
 
+    // TODO: 이후 categoryId 를 받아서 처리하도록 수정
+    Category rootCategory = categoryRepository.findRootCategory()
+        .orElse(null);
+    CategoryId rootCategoryId = rootCategory != null ? rootCategory.getId() : null;
+
+    CategoryId categoryId = command.getCategoryId();
+    if (categoryId == null) {
+      categoryId = rootCategoryId;
+    }
+
     Document document = Document.newOne(documentRepository, command.getOwnerId(),
-        command.getCategoryId(), command.getTitle(), command.getContent(), command.getTags(), option);
+        categoryId, command.getTitle(), command.getContent(), command.getTags(), option);
 
     Document savedDocument = documentRepository.save(document);
     return savedDocument.getId();
