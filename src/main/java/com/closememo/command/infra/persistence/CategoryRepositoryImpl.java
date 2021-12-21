@@ -38,8 +38,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @Override
-  public Optional<Category> findRootCategory() {
-    return categoryJpaRepository.findByIsRootTrue();
+  public Optional<Category> findRootCategory(AccountId ownerId) {
+    return categoryJpaRepository.findByOwnerIdAndIsRootTrue(ownerId);
   }
 
   @Override
