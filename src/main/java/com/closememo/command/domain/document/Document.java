@@ -16,6 +16,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +59,7 @@ public class Document {
   @Column(nullable = false)
   private long version;
 
+  @Builder(toBuilder = true)
   private Document(DocumentId id, AccountId ownerId, CategoryId categoryId, String title,
       String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
       DocumentOption option, long version) {

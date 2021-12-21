@@ -10,6 +10,7 @@ import com.closememo.command.domain.category.CategoryNotFoundException;
 import com.closememo.command.domain.category.CategoryRepository;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -22,7 +23,7 @@ public class CategoryCommandHandler {
     this.categoryRepository = categoryRepository;
   }
 
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   @ServiceActivator(inputChannel = "CreateRootCategoryCommand")
   public CategoryId handle(CreateRootCategoryCommand command) {
     Category category = Category.newRootCategory(categoryRepository.nextId(), command.getOwnerId());
