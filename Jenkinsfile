@@ -21,7 +21,10 @@ pipeline {
         }
         stage('Build jar') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                    branch 'batch'
+                }
             }
             steps {
                 sh './gradlew clean bootJar'
@@ -29,12 +32,20 @@ pipeline {
         }
         stage('Build image and Push') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                    branch 'batch'
+                }
             }
             steps {
                 echo "Starting to build docker image with tag: $NOW"
                 script {
-                    app = docker.build(dockerImage)
+                    def imageName = dockerImage
+                    if (env.BRANCH_NAME != 'master') {
+                        imageName = dockerImage + '-' + env.BRANCH_NAME
+                    }
+
+                    app = docker.build(imageName)
 
                     docker.withRegistry(registry, registryCredential) {
                         app.push(NOW)
@@ -45,7 +56,9 @@ pipeline {
         }
         stage('Trigger changing manifest job (dev)') {
             when {
-                branch 'master'
+                anyOf {
+                    branch 'master'
+                }
             }
             steps {
                 build job: 'closememo-deploy-trigger', parameters: [
