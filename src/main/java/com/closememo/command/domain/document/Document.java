@@ -139,6 +139,12 @@ public class Document {
         this.content, this.tags, updatedAt, previousOption, this.option, previousVersion));
   }
 
+  public void updateCategoryId(CategoryId categoryId) {
+    this.categoryId = categoryId;
+
+    Events.register(new DocumentCategoryUpdatedEvent(this.id, this.categoryId));
+  }
+
   public void updateAutoTags(List<String> autoTags) {
     validateTags(autoTags);
 

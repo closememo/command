@@ -2,6 +2,7 @@ package com.closememo.command.interfaces.client;
 
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
+import com.closememo.command.application.document.ChangeDocumentsCategoryCommand;
 import com.closememo.command.application.document.CreateDocumentCommand;
 import com.closememo.command.application.document.CreateLocalDocumentsCommand;
 import com.closememo.command.application.document.DeleteDocumentCommand;
@@ -14,6 +15,7 @@ import com.closememo.command.domain.category.Category;
 import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.infra.projection.WaitForProjection;
+import com.closememo.command.interfaces.client.requests.document.ChangeDocumentsCategoryRequest;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
 import com.closememo.command.interfaces.client.requests.document.CreateLocalDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
@@ -100,6 +102,24 @@ public class DocumentController {
     DocumentId documentId = new DocumentId(request.getDocumentId());
     UpdateDocumentCommand command = new UpdateDocumentCommand(requester, documentId,
         request.getTitle(), request.getContent(), request.getTags(), request.getOption());
+
+    return commandGateway.request(command);
+  }
+
+  @WaitForProjection
+  @Operation(summary = "Change Document's category")
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/change-documents-category")
+  public DocumentId changeDocumentsCategory(
+      @RequestBody @Valid ChangeDocumentsCategoryRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    AccountCommandRequester requester = new AccountCommandRequester(accountId);
+    List<DocumentId> documentIds = request.getDocumentIds().stream()
+        .map(DocumentId::new)
+        .collect(Collectors.toList());
+    ChangeDocumentsCategoryCommand command = new ChangeDocumentsCategoryCommand(requester,
+        documentIds, new CategoryId(request.getCategoryId()));
 
     return commandGateway.request(command);
   }

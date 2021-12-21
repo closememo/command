@@ -117,6 +117,23 @@ public class DocumentCommandHandler {
     return savedDocument.getId();
   }
 
+
+  @Transactional
+  @ServiceActivator(inputChannel = "ChangeDocumentsCategoryCommand")
+  public Success handle(ChangeDocumentsCategoryCommand command) {
+    Category category = categoryRepository.findById(command.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+
+    documentRepository.findAllByIdIn(command.getDocumentIds())
+        .peek(document -> checkAuthority(command, document.getOwnerId()))
+        .forEach(document -> {
+          document.updateCategoryId(category.getId());
+          documentRepository.save(document);
+        });
+
+    return Success.getInstance();
+  }
+
   @Transactional
   @ServiceActivator(inputChannel = "DeleteDocumentCommand")
   public Success handle(DeleteDocumentCommand command) {
