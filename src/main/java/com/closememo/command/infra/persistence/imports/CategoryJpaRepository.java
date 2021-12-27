@@ -13,6 +13,8 @@ public interface CategoryJpaRepository extends JpaRepository<Category, CategoryI
 
   Stream<Category> findAllByOwnerId(AccountId ownerId);
 
+  Stream<Category> findAllByParentId(CategoryId parentId);
+
   long countByOwnerId(AccountId ownerId);
 
   boolean existsByOwnerIdAndName(AccountId ownerId, String name);

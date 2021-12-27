@@ -48,6 +48,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @Override
+  public Stream<Category> findAllByParentId(CategoryId parentId) {
+    return categoryJpaRepository.findAllByParentId(parentId);
+  }
+
+  @Override
   public long countByOwnerId(AccountId ownerId) {
     return categoryJpaRepository.countByOwnerId(ownerId);
   }

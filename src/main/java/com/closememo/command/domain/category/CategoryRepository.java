@@ -16,6 +16,8 @@ public interface CategoryRepository {
 
   Stream<Category> findAllByOwnerId(AccountId ownerId);
 
+  Stream<Category> findAllByParentId(CategoryId categoryId);
+
   long countByOwnerId(AccountId ownerId);
 
   boolean existsByOwnerIdAndName(AccountId ownerId, String name);

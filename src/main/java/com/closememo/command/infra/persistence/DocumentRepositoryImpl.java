@@ -1,6 +1,7 @@
 package com.closememo.command.infra.persistence;
 
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.Document;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.domain.document.DocumentRepository;
@@ -50,6 +51,11 @@ public class DocumentRepositoryImpl implements DocumentRepository {
   @Override
   public Stream<Document> findAllByIdIn(Iterable<DocumentId> documentIds) {
     return documentJpaRepository.findAllByIdIn(documentIds);
+  }
+
+  @Override
+  public Stream<Document> findAllByCategoryId(CategoryId categoryId) {
+    return documentJpaRepository.findAllByCategoryId(categoryId);
   }
 
   @Override

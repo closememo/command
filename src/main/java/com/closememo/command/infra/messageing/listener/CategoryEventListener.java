@@ -6,6 +6,7 @@ import com.closememo.command.application.category.DeleteCategoryCommand;
 import com.closememo.command.domain.account.AccountCreatedEvent;
 import com.closememo.command.domain.account.AccountDeletedEvent;
 import com.closememo.command.domain.category.Category;
+import com.closememo.command.domain.category.CategoryDeletedEvent;
 import com.closememo.command.domain.category.CategoryRepository;
 import com.closememo.command.infra.messageing.publisher.MessagePublisher;
 import java.util.stream.Stream;
@@ -38,6 +39,18 @@ public class CategoryEventListener {
   @Transactional
   public void handle(AccountDeletedEvent payload) {
     try (Stream<Category> categories = categoryRepository.findAllByOwnerId(payload.getAccountId())) {
+      categories.forEach(category -> {
+        DeleteCategoryCommand command = new DeleteCategoryCommand(
+            SystemCommandRequester.getInstance(), category.getId());
+        messagePublisher.publish(command);
+      });
+    }
+  }
+
+  @ServiceActivator(inputChannel = "CategoryDeletedEvent")
+  @Transactional
+  public void handle(CategoryDeletedEvent payload) {
+    try (Stream<Category> categories = categoryRepository.findAllByParentId(payload.getCategoryId())) {
       categories.forEach(category -> {
         DeleteCategoryCommand command = new DeleteCategoryCommand(
             SystemCommandRequester.getInstance(), category.getId());

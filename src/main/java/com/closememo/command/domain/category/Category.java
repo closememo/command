@@ -124,6 +124,10 @@ public class Category {
   }
 
   public void delete() {
+    if (isRoot) {
+      throw new CannotDeleteRootCategoryException("Cannot delete root category.");
+    }
+
     Events.register(new CategoryDeletedEvent(this.id));
   }
 }
