@@ -29,6 +29,7 @@ public class Category {
   private static final int NUMBER_OF_CATEGORY_LIMIT = 100;
   private static final int MAX_CATEGORY_DEPTH = 3;
   private static final int MAX_NAME_LENGTH = 100;
+  private static final String VALID_CATEGORY_CHARS = "[_\\dA-Za-zㄱ-ㆎ가-힣ힰ-ퟆퟋ-ퟻＡ-Ｚａ-ｚｦ-ﾾￂ-ￇￊ-ￏￒ-ￗￚ-ￜ]+";
 
   @EmbeddedId
   private CategoryId id;
@@ -114,12 +115,16 @@ public class Category {
       throw new InvalidCategoryNameException(
           String.format("category name cannot exceed %d characters", MAX_NAME_LENGTH));
     }
+
+    if (!name.matches(VALID_CATEGORY_CHARS)) {
+      throw new InvalidCategoryNameException("category name contains invalid characters");
+    }
   }
 
   private static void validateDepth(int depth) {
     if (depth > MAX_CATEGORY_DEPTH) {
       throw new CategoryDepthLimitExceededException(
-          String.format("category depth cannot exceed %d characters", MAX_CATEGORY_DEPTH));
+          String.format("category depth cannot exceed %d", MAX_CATEGORY_DEPTH));
     }
   }
 
