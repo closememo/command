@@ -1,6 +1,7 @@
 package com.closememo.command.infra.persistence.imports;
 
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.Document;
 import com.closememo.command.domain.document.DocumentId;
 import java.util.stream.Stream;
@@ -13,4 +14,6 @@ public interface DocumentJpaRepository extends JpaRepository<Document, DocumentI
   Stream<Document> findAllByOwnerId(AccountId accountId);
 
   Stream<Document> findAllByIdIn(Iterable<DocumentId> documentIds);
+
+  Stream<Document> findAllByCategoryId(CategoryId categoryId);
 }

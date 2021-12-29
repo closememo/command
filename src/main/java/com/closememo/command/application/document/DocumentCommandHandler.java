@@ -55,8 +55,18 @@ public class DocumentCommandHandler {
   public DocumentId handle(CreateDocumentCommand command) {
     DocumentOption option = new DocumentOption(command.getOption().getHasAutoTag());
 
+    // TODO: 이후 categoryId 를 받아서 처리하도록 수정
+    Category rootCategory = categoryRepository.findRootCategory(command.getOwnerId())
+        .orElse(null);
+    CategoryId rootCategoryId = rootCategory != null ? rootCategory.getId() : null;
+
+    CategoryId categoryId = command.getCategoryId();
+    if (categoryId == null) {
+      categoryId = rootCategoryId;
+    }
+
     Document document = Document.newOne(documentRepository, command.getOwnerId(),
-        command.getCategoryId(), command.getTitle(), command.getContent(), command.getTags(), option);
+        categoryId, command.getTitle(), command.getContent(), command.getTags(), option);
 
     Document savedDocument = documentRepository.save(document);
     return savedDocument.getId();
@@ -67,7 +77,7 @@ public class DocumentCommandHandler {
   public List<DocumentId> handle(CreateLocalDocumentsCommand command) {
 
     // TODO: 이후 root category 가 없으면 예외 처리하도록 수정
-    Category category = categoryRepository.findRootCategory()
+    Category category = categoryRepository.findRootCategory(command.getOwnerId())
         .orElse(null);
     CategoryId categoryId = category != null ? category.getId() : null;
 

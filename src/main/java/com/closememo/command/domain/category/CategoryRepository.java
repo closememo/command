@@ -12,9 +12,11 @@ public interface CategoryRepository {
 
   Optional<Category> findById(CategoryId categoryId);
 
-  Optional<Category> findRootCategory();
+  Optional<Category> findRootCategory(AccountId ownerId);
 
   Stream<Category> findAllByOwnerId(AccountId ownerId);
+
+  Stream<Category> findAllByParentId(CategoryId categoryId);
 
   long countByOwnerId(AccountId ownerId);
 

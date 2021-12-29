@@ -213,6 +213,6 @@ public class Document {
   }
 
   public void delete() {
-    Events.register(new DocumentDeletedEvent(this.id));
+    Events.register(new DocumentDeletedEvent(this.id, this.categoryId));
   }
 }

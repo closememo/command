@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryJpaRepository extends JpaRepository<Category, CategoryId> {
 
-  Optional<Category> findByIsRootTrue();
+  Optional<Category> findByOwnerIdAndIsRootTrue(AccountId ownerId);
 
   Stream<Category> findAllByOwnerId(AccountId ownerId);
+
+  Stream<Category> findAllByParentId(CategoryId parentId);
 
   long countByOwnerId(AccountId ownerId);
 
