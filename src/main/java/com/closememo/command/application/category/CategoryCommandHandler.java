@@ -58,6 +58,32 @@ public class CategoryCommandHandler {
   }
 
   @Transactional
+  @ServiceActivator(inputChannel = "IncreaseCategoryCountCommand")
+  public CategoryId handle(IncreaseCategoryCountCommand command) {
+    Category category = categoryRepository.findById(command.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+    checkAuthority(command, category.getOwnerId());
+
+    category.increaseCount();
+    Category savedCategory = categoryRepository.save(category);
+
+    return savedCategory.getId();
+  }
+
+  @Transactional
+  @ServiceActivator(inputChannel = "DecreaseCategoryCountCommand")
+  public CategoryId handle(DecreaseCategoryCountCommand command) {
+    Category category = categoryRepository.findById(command.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+    checkAuthority(command, category.getOwnerId());
+
+    category.decreaseCount();
+    Category savedCategory = categoryRepository.save(category);
+
+    return savedCategory.getId();
+  }
+
+  @Transactional
   @ServiceActivator(inputChannel = "DeleteCategoryCommand")
   public Success handle(DeleteCategoryCommand command) {
     Category category = categoryRepository.findById(command.getCategoryId())

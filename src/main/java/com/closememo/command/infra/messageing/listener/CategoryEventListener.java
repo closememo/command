@@ -2,12 +2,17 @@ package com.closememo.command.infra.messageing.listener;
 
 import com.closememo.command.application.SystemCommandRequester;
 import com.closememo.command.application.category.CreateRootCategoryCommand;
+import com.closememo.command.application.category.DecreaseCategoryCountCommand;
 import com.closememo.command.application.category.DeleteCategoryCommand;
+import com.closememo.command.application.category.IncreaseCategoryCountCommand;
 import com.closememo.command.domain.account.AccountCreatedEvent;
 import com.closememo.command.domain.account.AccountDeletedEvent;
 import com.closememo.command.domain.category.Category;
 import com.closememo.command.domain.category.CategoryDeletedEvent;
+import com.closememo.command.domain.category.CategoryNotFoundException;
 import com.closememo.command.domain.category.CategoryRepository;
+import com.closememo.command.domain.document.DocumentCreatedEvent;
+import com.closememo.command.domain.document.DocumentDeletedEvent;
 import com.closememo.command.infra.messageing.publisher.MessagePublisher;
 import java.util.stream.Stream;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -45,6 +50,24 @@ public class CategoryEventListener {
         messagePublisher.publish(command);
       });
     }
+  }
+
+  @ServiceActivator(inputChannel = "DocumentCreatedEvent")
+  public void handle(DocumentCreatedEvent payload) {
+    Category category = categoryRepository.findById(payload.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+    IncreaseCategoryCountCommand command = new IncreaseCategoryCountCommand(
+        SystemCommandRequester.getInstance(), category.getId());
+    messagePublisher.publish(command);
+  }
+
+  @ServiceActivator(inputChannel = "DocumentDeletedEvent")
+  public void handle(DocumentDeletedEvent payload) {
+    Category category = categoryRepository.findById(payload.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+    DecreaseCategoryCountCommand command = new DecreaseCategoryCountCommand(
+        SystemCommandRequester.getInstance(), category.getId());
+    messagePublisher.publish(command);
   }
 
   @ServiceActivator(inputChannel = "CategoryDeletedEvent")

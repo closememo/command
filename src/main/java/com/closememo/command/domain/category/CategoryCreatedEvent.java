@@ -16,9 +16,10 @@ public class CategoryCreatedEvent extends DomainEvent {
   private final Boolean isRoot;
   private final CategoryId parentId;
   private final Integer depth;
+  private final Integer count;
 
   public CategoryCreatedEvent(CategoryId categoryId, AccountId ownerId, String name,
-      ZonedDateTime createdAt, boolean isRoot, CategoryId parentId, int depth) {
+      ZonedDateTime createdAt, boolean isRoot, CategoryId parentId, int depth, int count) {
 
     super(categoryId.getId(), 1);
     this.ownerId = ownerId;
@@ -27,5 +28,6 @@ public class CategoryCreatedEvent extends DomainEvent {
     this.isRoot = isRoot;
     this.parentId = parentId;
     this.depth = depth;
+    this.count = count;
   }
 }
