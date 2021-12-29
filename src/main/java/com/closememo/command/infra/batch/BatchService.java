@@ -1,19 +1,11 @@
 package com.closememo.command.infra.batch;
 
 import com.closememo.command.application.SystemCommandRequester;
-import com.closememo.command.application.category.CreateRootCategoryCommand;
-import com.closememo.command.application.document.ChangeDocumentsCategoryCommand;
-import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.application.category.BatchCategorySetCountCommand;
 import com.closememo.command.domain.category.CategoryId;
-import com.closememo.command.domain.document.Document;
-import com.closememo.command.domain.document.DocumentId;
-import com.closememo.command.domain.document.DocumentRepository;
 import com.closememo.command.infra.messageing.publisher.MessagePublisher;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,64 +19,46 @@ public class BatchService {
 
   private final NamedParameterJdbcTemplate jdbcTemplate;
   private final MessagePublisher messagePublisher;
-  private final DocumentRepository documentRepository;
 
   public BatchService(
       NamedParameterJdbcTemplate jdbcTemplate,
-      MessagePublisher messagePublisher,
-      DocumentRepository documentRepository) {
+      MessagePublisher messagePublisher) {
     this.jdbcTemplate = jdbcTemplate;
     this.messagePublisher = messagePublisher;
-    this.documentRepository = documentRepository;
-  }
-
-  public List<String> step1() {
-    List<Account> accounts = jdbcTemplate.query(
-        "SELECT a.id FROM accounts a"
-            + " LEFT JOIN categories c ON a.id = c.owner_id"
-            + " WHERE c.owner_id IS NULL",
-        Map.of(),
-        Account.rowMapper());
-
-    accounts.forEach(account -> {
-          AccountId accountId = new AccountId(account.id);
-          CreateRootCategoryCommand command =
-              new CreateRootCategoryCommand(SystemCommandRequester.getInstance(), accountId);
-          messagePublisher.publish(command);
-        }
-    );
-
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    return accounts.stream()
-        .map(Account::getId)
-        .collect(Collectors.toList());
   }
 
   @Transactional
-  public void step2(String accountId) {
-    Category category = jdbcTemplate.queryForObject(
-        "SELECT c.id FROM categories c WHERE c.owner_id = :ownerId AND c.is_root = TRUE",
+  public void step1() {
+    List<Account> accounts = jdbcTemplate.query(
+        "SELECT a.id FROM accounts a",
+        Map.of(),
+        Account.rowMapper());
+
+    accounts.stream()
+        .map(Account::getId)
+        .forEach(this::step1_1);
+  }
+
+  private void step1_1(String accountId) {
+    List<Category> categories = jdbcTemplate.query(
+        "SELECT c.id FROM categories c WHERE c.owner_id = :ownerId",
         Map.of("ownerId", accountId),
         Category.rowMapper());
 
-    if (category == null) {
-      return;
-    }
+    categories.stream()
+        .map(Category::getId)
+        .forEach(this::step1_2);
+  }
 
-    List<DocumentId> documentIds = new ArrayList<>();
-    try (Stream<Document> documents = documentRepository.findAllByOwnerId(new AccountId(accountId))) {
-      documents.map(Document::getId)
-          .forEach(documentIds::add);
-    }
+  private void step1_2(String categoryId) {
+    Integer count = jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM documents d WHERE d.category_id = :categoryId",
+        Map.of("categoryId", categoryId),
+        Integer.class);
 
-    CategoryId categoryId = new CategoryId(category.id);
-    ChangeDocumentsCategoryCommand command =
-        new ChangeDocumentsCategoryCommand(SystemCommandRequester.getInstance(), documentIds, categoryId);
+    BatchCategorySetCountCommand command = new BatchCategorySetCountCommand(
+        SystemCommandRequester.getInstance(), new CategoryId(categoryId),
+        count != null ? count : 0);
 
     messagePublisher.publish(command);
   }

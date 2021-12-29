@@ -149,4 +149,9 @@ public class Category {
 
     Events.register(new CategoryDeletedEvent(this.id));
   }
+
+  public void batchSetCount(int count) {
+    this.count = count;
+    Events.register(new BatchCategoryDepthAndCountSetEvent(this.id, this.depth, this.count));
+  }
 }
