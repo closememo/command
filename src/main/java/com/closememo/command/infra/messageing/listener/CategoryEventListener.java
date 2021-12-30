@@ -63,11 +63,12 @@ public class CategoryEventListener {
 
   @ServiceActivator(inputChannel = "DocumentDeletedEvent")
   public void handle(DocumentDeletedEvent payload) {
-    Category category = categoryRepository.findById(payload.getCategoryId())
-        .orElseThrow(CategoryNotFoundException::new);
-    DecreaseCategoryCountCommand command = new DecreaseCategoryCountCommand(
-        SystemCommandRequester.getInstance(), category.getId());
-    messagePublisher.publish(command);
+    // 카테고리가 이미 삭제된 경우 무시한다.
+    categoryRepository.findById(payload.getCategoryId()).ifPresent(category -> {
+      DecreaseCategoryCountCommand command = new DecreaseCategoryCountCommand(
+          SystemCommandRequester.getInstance(), category.getId());
+      messagePublisher.publish(command);
+    });
   }
 
   @ServiceActivator(inputChannel = "CategoryDeletedEvent")
