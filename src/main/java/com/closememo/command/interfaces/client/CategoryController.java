@@ -72,7 +72,7 @@ public class CategoryController {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
     CategoryId categoryId = new CategoryId(request.getCategoryId());
-    DeleteCategoryCommand command = new DeleteCategoryCommand(requester, categoryId);
+    DeleteCategoryCommand command = new DeleteCategoryCommand(requester, categoryId, false);
 
     commandGateway.request(command);
   }

@@ -9,9 +9,12 @@ import lombok.Getter;
 public class DeleteCategoryCommand extends Command {
 
   private final CategoryId categoryId;
+  private final Boolean isRootDeleting;
 
-  public DeleteCategoryCommand(CommandRequester requester, CategoryId categoryId) {
+  public DeleteCategoryCommand(CommandRequester requester,
+      CategoryId categoryId, Boolean isRootDeleting) {
     super(requester);
     this.categoryId = categoryId;
+    this.isRootDeleting = isRootDeleting;
   }
 }

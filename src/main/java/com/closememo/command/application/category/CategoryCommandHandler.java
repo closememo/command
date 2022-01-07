@@ -90,7 +90,7 @@ public class CategoryCommandHandler {
         .orElseThrow(CategoryNotFoundException::new);
     checkAuthority(command, category.getOwnerId());
 
-    category.delete();
+    category.delete(command.getIsRootDeleting());
     categoryRepository.delete(category);
 
     return Success.getInstance();

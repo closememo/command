@@ -46,7 +46,7 @@ public class CategoryEventListener {
     try (Stream<Category> categories = categoryRepository.findAllByOwnerId(payload.getAccountId())) {
       categories.forEach(category -> {
         DeleteCategoryCommand command = new DeleteCategoryCommand(
-            SystemCommandRequester.getInstance(), category.getId());
+            SystemCommandRequester.getInstance(), category.getId(), category.getIsRoot());
         messagePublisher.publish(command);
       });
     }
@@ -77,7 +77,7 @@ public class CategoryEventListener {
     try (Stream<Category> categories = categoryRepository.findAllByParentId(payload.getCategoryId())) {
       categories.forEach(category -> {
         DeleteCategoryCommand command = new DeleteCategoryCommand(
-            SystemCommandRequester.getInstance(), category.getId());
+            SystemCommandRequester.getInstance(), category.getId(), category.getIsRoot());
         messagePublisher.publish(command);
       });
     }

@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
-  private static final String ROOT_NAME = StringUtils.EMPTY;
+  private static final String ROOT_NAME = "메인";
   private static final int NUMBER_OF_CATEGORY_LIMIT = 100;
   private static final int MAX_CATEGORY_DEPTH = 3;
   private static final int MAX_NAME_LENGTH = 100;
@@ -142,8 +142,8 @@ public class Category {
     }
   }
 
-  public void delete() {
-    if (isRoot) {
+  public void delete(boolean isRootDeleting) {
+    if (isRoot && !isRootDeleting) {
       throw new CannotDeleteRootCategoryException("Cannot delete root category.");
     }
 
