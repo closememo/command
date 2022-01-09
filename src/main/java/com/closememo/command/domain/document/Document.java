@@ -14,6 +14,8 @@ import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -57,10 +59,13 @@ public class Document {
   private DocumentOption option;
   @Column(nullable = false)
   private long version;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Status status;
 
   private Document(DocumentId id, AccountId ownerId, CategoryId categoryId, String title,
       String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
-      DocumentOption option, long version) {
+      DocumentOption option, long version, Status status) {
 
     this.id = id;
     this.ownerId = ownerId;
@@ -72,6 +77,7 @@ public class Document {
     this.createdAt = createdAt;
     this.option = option;
     this.version = version;
+    this.status = status;
   }
 
   public static Document newOne(DocumentRepository documentRepository, AccountId ownerId,
@@ -87,10 +93,10 @@ public class Document {
 
     ZonedDateTime createdAt = ZonedDateTime.now();
 
-    Document document = new Document(documentRepository.nextId(), ownerId, categoryId,
-        title, content, checkedTags, Collections.emptyList(), createdAt, option, 1L);
-    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId,
-        title, content, checkedTags, createdAt, option));
+    Document document = new Document(documentRepository.nextId(), ownerId, categoryId, title,
+        content, checkedTags, Collections.emptyList(), createdAt, option, 1L, Status.NORMAL);
+    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId, title,
+        content, checkedTags, createdAt, option, Status.NORMAL));
     return document;
   }
 
@@ -104,10 +110,10 @@ public class Document {
     List<String> localTags = Collections.singletonList("오프라인");
     DocumentOption option = new DocumentOption(true);
 
-    Document document = new Document(documentRepository.nextId(), ownerId, categoryId,
-        title, content, localTags, Collections.emptyList(), createdAt, option, 1L);
-    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId,
-        title, content, localTags, createdAt, option));
+    Document document = new Document(documentRepository.nextId(), ownerId, categoryId, title,
+        content, localTags, Collections.emptyList(), createdAt, option, 1L, Status.NORMAL);
+    Events.register(new DocumentCreatedEvent(document.getId(), ownerId, categoryId, title,
+        content, localTags, createdAt, option, Status.NORMAL));
     return document;
   }
 
@@ -212,5 +218,10 @@ public class Document {
 
   public void delete() {
     Events.register(new DocumentDeletedEvent(this.id, this.categoryId));
+  }
+
+  public void setDeletedStatus() {
+    this.status = Status.DELETED;
+    Events.register(new DocumentDeletedStatusSetEvent(this.id));
   }
 }

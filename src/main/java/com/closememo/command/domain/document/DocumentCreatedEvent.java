@@ -20,10 +20,11 @@ public class DocumentCreatedEvent extends DomainEvent {
   private final List<String> tags;
   private final ZonedDateTime createdAt;
   private final DocumentOption option;
+  private final Status status;
 
   public DocumentCreatedEvent(DocumentId documentId, AccountId ownerId, CategoryId categoryId,
-      String title, String content, List<String> tags,
-      ZonedDateTime createdAt, DocumentOption option) {
+      String title, String content, List<String> tags, ZonedDateTime createdAt,
+      DocumentOption option, Status status) {
 
     super(documentId.getId(), 1);
     this.documentId = documentId;
@@ -34,5 +35,6 @@ public class DocumentCreatedEvent extends DomainEvent {
     this.tags = tags;
     this.createdAt = createdAt;
     this.option = option;
+    this.status = status;
   }
 }

@@ -184,8 +184,8 @@ public class DocumentCommandHandler {
 
     if (command.isNeedToDelete()) {
       documents.forEach(document -> {
-        document.delete();
-        documentRepository.delete(document);
+        document.setDeletedStatus();
+        documentRepository.save(document);
       });
     }
 
