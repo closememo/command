@@ -59,12 +59,18 @@ public class Suggestion {
     return suggestion;
   }
 
-  public void update(String content) {
+  public void updateContent(String content) {
     if (!Status.REGISTERED.equals(this.status)) {
       throw new CannotChangeSuggestionException("suggestion cannot be changed");
     }
 
     this.content = content;
+
+    Events.register(new SuggestionUpdatedEvent(this.id, this.content, this.status));
+  }
+
+  public void updateStatus(Status status) {
+    this.status = status;
 
     Events.register(new SuggestionUpdatedEvent(this.id, this.content, this.status));
   }

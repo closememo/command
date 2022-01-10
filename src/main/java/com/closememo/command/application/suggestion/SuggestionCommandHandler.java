@@ -35,7 +35,19 @@ public class SuggestionCommandHandler {
     Suggestion suggestion = suggestionRepository.findById(command.getSuggestionId())
         .orElseThrow(SuggestionNotFoundException::new);
 
-    suggestion.update(command.getContent());
+    suggestion.updateContent(command.getContent());
+    Suggestion savedSuggestion = suggestionRepository.save(suggestion);
+
+    return savedSuggestion.getId();
+  }
+
+  @Transactional
+  @ServiceActivator(inputChannel = "ChangeSuggestionStatusCommand")
+  public SuggestionId handle(ChangeSuggestionStatusCommand command) {
+    Suggestion suggestion = suggestionRepository.findById(command.getSuggestionId())
+        .orElseThrow(SuggestionNotFoundException::new);
+
+    suggestion.updateStatus(command.getStatus());
     Suggestion savedSuggestion = suggestionRepository.save(suggestion);
 
     return savedSuggestion.getId();
