@@ -25,7 +25,7 @@ public class Suggestion {
 
   @EmbeddedId
   private SuggestionId id;
-  @AttributeOverride(name = "id", column = @Column(name = "ownerId", nullable = false))
+  @AttributeOverride(name = "id", column = @Column(name = "writer_id", nullable = false))
   private AccountId writerId;
   @Column(nullable = false, columnDefinition = "TEXT")
   private String content;
