@@ -29,4 +29,13 @@ public class TaskExecutorConfig {
     int size = (int) (0.5 + maximumDbConnection * ratio);
     return size == 0 ? 1 : size;
   }
+
+  @Bean
+  public ThreadPoolTaskExecutor ackEventTaskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setThreadNamePrefix("ACK-EXE-");
+    executor.initialize();
+
+    return executor;
+  }
 }

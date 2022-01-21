@@ -3,6 +3,7 @@ package com.closememo.command.config.messaging.integration;
 import static org.reflections.scanners.Scanners.SubTypes;
 
 import com.closememo.command.application.Command;
+import com.closememo.command.config.messaging.kafka.KafkaMessageConverter;
 import com.closememo.command.domain.DomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.annotation.PostConstruct;
@@ -13,14 +14,19 @@ import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.ExecutorChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.EventDrivenConsumer;
+import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -38,6 +44,23 @@ public class IntegrationConfig {
     return IntegrationFlows.from(COMMAND_CHANNEL_NAME)
         .route((Command o) -> o.getClass().getSimpleName())
         .get();
+  }
+
+  @Bean
+  public KafkaMessageDrivenChannelAdapter<?, ?> kafkaMessageDrivenAdapter(
+      @Qualifier("kafkaListenerContainerFactory") KafkaListenerContainerFactory<?> kafkaListenerContainerFactory,
+      @Qualifier("kafkaMessageConverter") KafkaMessageConverter kafkaMessageConverter) {
+
+    String[] topics = new String[] {"AckEvent"};
+    ConcurrentMessageListenerContainer<?, ?> container
+        = (ConcurrentMessageListenerContainer<?, ?>) kafkaListenerContainerFactory
+        .createContainer(topics);
+    KafkaMessageDrivenChannelAdapter<?, ?> kafkaMessageDrivenChannelAdapter
+        = new KafkaMessageDrivenChannelAdapter<>(container);
+    kafkaMessageDrivenChannelAdapter.setMessageConverter(kafkaMessageConverter);
+    kafkaMessageDrivenChannelAdapter.setOutputChannel(inboundKafkaMessageChannel());
+
+    return kafkaMessageDrivenChannelAdapter;
   }
 
   @Bean
@@ -59,6 +82,18 @@ public class IntegrationConfig {
         throw new IllegalArgumentException();
       }
     };
+  }
+
+  @Bean
+  public MessageChannel inboundKafkaMessageChannel() {
+    return new DirectChannel();
+  }
+
+  @Bean
+  public IntegrationFlow routeKafkaInboundMessage() {
+    return IntegrationFlows.from(inboundKafkaMessageChannel())
+        .route("headers.kafka_receivedTopic")
+        .get();
   }
 
   @Component

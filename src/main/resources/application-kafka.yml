@@ -5,6 +5,14 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: 1
       retries: 3
+    consumer:
+      enable-auto-commit: true
+      auto-commit-interval: 1000
+      max-poll-records: 15
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${random.value} # for ack event. 모든 command 컴포넌트가 받아야 하기 때문에 랜덤
 
 ---
 

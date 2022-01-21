@@ -16,11 +16,18 @@ public class DomainEvent extends Message implements Serializable {
   private String aggregateId;
   private int eventVersion;
   private ZonedDateTime occurredOn;
+  private boolean needAck;
 
   public DomainEvent(String aggregateId, int eventVersion) {
     this.aggregateId = aggregateId;
     this.eventVersion = eventVersion;
     this.occurredOn = ZonedDateTime.now();
+    this.needAck = false;
+  }
+
+  public DomainEvent needAck() {
+    this.needAck = true;
+    return this;
   }
 
   @Override
