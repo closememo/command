@@ -1,11 +1,15 @@
 package com.closememo.command.config.messaging.integration;
 
+import static org.reflections.scanners.Scanners.SubTypes;
+
 import com.closememo.command.application.Command;
 import com.closememo.command.domain.DomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -82,28 +86,33 @@ public class IntegrationConfig {
     private void registerCommandChannels(GenericWebApplicationContext context,
         ThreadPoolTaskExecutor messageTaskExecutor) {
 
-      Reflections reflections = new Reflections("com.closememo.command.application");
-      CommandClassResolver commandClassResolver = new CommandClassResolver(
-          reflections.getSubTypesOf(Command.class));
+      Reflections reflections = new Reflections(new ConfigurationBuilder()
+          .setUrls(ClasspathHelper.forClass(Command.class))
+          .setScanners(SubTypes));
 
-      commandClassResolver.getNames()
-          .forEach(name -> context.registerBean(name, ExecutorChannel.class,
+      reflections.getSubTypesOf(Command.class)
+          .forEach(aClass -> context.registerBean(aClass.getSimpleName(), ExecutorChannel.class,
               () -> new ExecutorChannel(messageTaskExecutor)));
     }
 
     private void registerDomainEventChannels(GenericWebApplicationContext context,
         ThreadPoolTaskExecutor messageTaskExecutor, MessageHandler broadcastDomainEventHandler) {
-      Reflections reflections = new Reflections("com.closememo.command.domain");
-      reflections.getSubTypesOf(DomainEvent.class).forEach(aClass -> {
-        String eventChannelName = aClass.getSimpleName();
 
-        context.registerBean(eventChannelName, PublishSubscribeChannel.class,
-            () -> new PublishSubscribeChannel(messageTaskExecutor));
-        PublishSubscribeChannel eventChannel = context
-            .getBean(eventChannelName, PublishSubscribeChannel.class);
-        context.registerBean("Broadcast-" + eventChannelName, EventDrivenConsumer.class,
-            eventChannel, broadcastDomainEventHandler);
-      });
+      Reflections reflections = new Reflections(new ConfigurationBuilder()
+          .setUrls(ClasspathHelper.forClass(DomainEvent.class))
+          .setScanners(SubTypes));
+
+      reflections.getSubTypesOf(DomainEvent.class)
+          .forEach(aClass -> {
+            String eventChannelName = aClass.getSimpleName();
+
+            context.registerBean(eventChannelName, PublishSubscribeChannel.class,
+                () -> new PublishSubscribeChannel(messageTaskExecutor));
+            PublishSubscribeChannel eventChannel = context
+                .getBean(eventChannelName, PublishSubscribeChannel.class);
+            context.registerBean("Broadcast-" + eventChannelName, EventDrivenConsumer.class,
+                eventChannel, broadcastDomainEventHandler);
+          });
     }
   }
 }
