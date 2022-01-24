@@ -37,13 +37,11 @@ public class AccountCommandHandler {
   @Transactional
   public LoginAccount handle(RegisterNaverAccountCommand command) {
 
-    NaverTokenResponse tokenResponse = naverOAuthClient.getAccessToken(
+    NaverProfileResponse.NaverProfile profile = getProfileResponse(
         command.getCode(), command.getState());
-    NaverProfileResponse profileResponse = naverApiClient.getNaverProfile(
-        tokenResponse.getTokenType(), tokenResponse.getAccessToken());
 
-    String socialId = profileResponse.getNaverProfile().getId();
-    String email = profileResponse.getNaverProfile().getEmail();
+    String socialId = profile.getId();
+    String email = profile.getEmail();
     Token token = accountRepository.generateNewToken();
 
     Account account = Account.newOne(accountRepository, Social.NAVER, socialId, email,
@@ -58,12 +56,10 @@ public class AccountCommandHandler {
   @Transactional
   public LoginAccount handle(LoginNaverAccountCommand command) {
 
-    NaverTokenResponse tokenResponse = naverOAuthClient.getAccessToken(
+    NaverProfileResponse.NaverProfile profile = getProfileResponse(
         command.getCode(), command.getState());
-    NaverProfileResponse profileResponse = naverApiClient.getNaverProfile(
-        tokenResponse.getTokenType(), tokenResponse.getAccessToken());
 
-    String socialId = profileResponse.getNaverProfile().getId();
+    String socialId = profile.getId();
     Token token = accountRepository.generateNewToken();
 
     Account account = accountRepository.findBySocialId(socialId)
@@ -73,6 +69,13 @@ public class AccountCommandHandler {
     Account savedAccount = accountRepository.save(account);
 
     return new LoginAccount(savedAccount.getId(), token);
+  }
+
+  private NaverProfileResponse.NaverProfile getProfileResponse(String code, String status) {
+    NaverTokenResponse tokenResponse = naverOAuthClient.getAccessToken(code, status);
+    NaverProfileResponse profileResponse =  naverApiClient.getNaverProfile(
+        tokenResponse.getTokenType(), tokenResponse.getAccessToken());
+    return profileResponse.getNaverProfile();
   }
 
   @ServiceActivator(inputChannel = "ReissueTokenCommand")

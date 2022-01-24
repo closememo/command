@@ -84,7 +84,8 @@ public class Account {
 
     Account account = new Account(accountRepository.nextId(), social, socialId, email,
         tokens, userRoleSet, createdAt);
-    Events.register(new AccountCreatedEvent(account.getId(), email, tokens, userRoleSet, createdAt));
+    Events.register(new AccountCreatedEvent(account.getId(), email, tokens, userRoleSet, createdAt)
+        .needAck());
     return account;
   }
 
@@ -111,7 +112,8 @@ public class Account {
 
     this.tokens = tokens;
 
-    Events.register(new AccountTokenUpdatedEvent(this.id, this.tokens));
+    Events.register(new AccountTokenUpdatedEvent(this.id, this.tokens)
+        .needAck());
   }
 
   public void changeToken(String oldTokenId, Token newToken) {
@@ -121,7 +123,8 @@ public class Account {
 
     this.tokens = tokens;
 
-    Events.register(new AccountTokenUpdatedEvent(this.id, this.tokens));
+    Events.register(new AccountTokenUpdatedEvent(this.id, this.tokens)
+        .needAck());
   }
 
   public void removeToken(String tokenId) {
