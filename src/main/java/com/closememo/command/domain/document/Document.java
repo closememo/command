@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
 @Entity
@@ -32,7 +33,7 @@ public class Document {
   private static final int NUMBER_OF_DOCUMENT_LIMIT = 500;
   private static final int NUMBER_OF_TAG_LIMIT = 100;
   private static final int MAX_TITLE_LENGTH = 100;
-  private static final int MAX_CONTENT_LENGTH = 5000;
+  private static final int MAX_CONTENT_LENGTH = 10000;
   private static final int MAX_TAG_LENGTH = 25;
   private static final String VALID_TAG_CHARS = "[_\\dA-Za-zㄱ-ㆎ가-힣ힰ-ퟆퟋ-ퟻＡ-Ｚａ-ｚｦ-ﾾￂ-ￇￊ-ￏￒ-ￗￚ-ￜ]+";
 
@@ -126,6 +127,11 @@ public class Document {
 
     List<String> checkedTags = checkTags(tags);
 
+    // 바뀐 것이 없으면 아무것도 하지 않는다.
+    if (isDocumentNotChanged(title, content, checkedTags, option)) {
+      return;
+    }
+
     String previousContent = this.content;
     long previousVersion = this.version;
     DocumentOption previousOption = this.option;
@@ -143,6 +149,15 @@ public class Document {
 
     Events.register(new DocumentUpdatedEvent(this.id, this.ownerId, this.title, previousContent,
         this.content, this.tags, updatedAt, previousOption, this.option, previousVersion));
+  }
+
+  private boolean isDocumentNotChanged(String title, String content, List<String> tags,
+      DocumentOption option) {
+
+    return StringUtils.equals(this.title, title)
+        && StringUtils.equals(this.content, content)
+        && CollectionUtils.isEqualCollection(this.tags, tags)
+        && this.option.equals(option);
   }
 
   public void updateCategoryId(CategoryId categoryId) {
