@@ -13,6 +13,7 @@ import com.closememo.command.infra.http.naver.NaverTokenResponse;
 import com.closememo.command.application.Success;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class AccountCommandHandler {
     this.naverOAuthClient = naverOAuthClient;
   }
 
+  // TODO: 기능을 LoginNaverAccountCommand 로 통합하고 이것은 제거.
   @ServiceActivator(inputChannel = "RegisterNaverAccountCommand")
   @Transactional
   public LoginAccount handle(RegisterNaverAccountCommand command) {
@@ -60,12 +62,21 @@ public class AccountCommandHandler {
         command.getCode(), command.getState());
 
     String socialId = profile.getId();
+    String email = profile.getEmail();
     Token token = accountRepository.generateNewToken();
 
-    Account account = accountRepository.findBySocialId(socialId)
-        .orElseThrow(AccountNotFoundException::new);
+    Optional<Account> optional = accountRepository.findBySocialId(socialId);
 
-    account.addNewToken(token);
+    Account account;
+    if (optional.isPresent()) {
+      // 계정이 존재하면 토큰을 추가한다.
+      account = optional.get();
+      account.addNewToken(token);
+    } else {
+      // 없으면 새로 만든다.
+      account = Account.newOne(accountRepository, Social.NAVER, socialId, email,
+          Collections.singletonList(token));
+    }
     Account savedAccount = accountRepository.save(account);
 
     return new LoginAccount(savedAccount.getId(), token);
