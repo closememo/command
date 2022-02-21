@@ -1,12 +1,12 @@
 package com.closememo.command.application.notice;
 
-import com.closememo.command.application.Command;
+import com.closememo.command.application.ChangeCommand;
 import com.closememo.command.application.CommandRequester;
 import com.closememo.command.domain.notice.NoticeId;
 import lombok.Getter;
 
 @Getter
-public class UpdateNoticeCommand extends Command {
+public class UpdateNoticeCommand extends ChangeCommand<NoticeId> {
 
   private final NoticeId noticeId;
   private final String title;
@@ -14,7 +14,7 @@ public class UpdateNoticeCommand extends Command {
 
   public UpdateNoticeCommand(CommandRequester requester,
       NoticeId noticeId, String title, String content) {
-    super(requester);
+    super(requester, noticeId);
     this.noticeId = noticeId;
     this.title = title;
     this.content = content;

@@ -13,7 +13,7 @@ import com.closememo.command.application.account.LoginNaverAccountCommand;
 import com.closememo.command.application.account.LogoutCommand;
 import com.closememo.command.application.account.RegisterNaverAccountCommand;
 import com.closememo.command.application.account.ReissueTokenCommand;
-import com.closememo.command.application.account.WidthdrawAccountCommand;
+import com.closememo.command.application.account.WithdrawAccountCommand;
 import com.closememo.command.config.openapi.apitags.AccountApiTag;
 import com.closememo.command.domain.account.AccountId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,8 +82,8 @@ public class AccountController {
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/withdraw")
   public void withdraw(@AuthenticationPrincipal AccountId accountId) {
-    WidthdrawAccountCommand command =
-        new WidthdrawAccountCommand(new AccountCommandRequester(accountId), accountId);
+    WithdrawAccountCommand command =
+        new WithdrawAccountCommand(new AccountCommandRequester(accountId), accountId);
     commandGateway.request(command);
   }
 }

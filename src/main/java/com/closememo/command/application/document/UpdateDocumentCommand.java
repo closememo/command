@@ -1,6 +1,6 @@
 package com.closememo.command.application.document;
 
-import com.closememo.command.application.Command;
+import com.closememo.command.application.ChangeCommand;
 import com.closememo.command.application.CommandRequester;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.client.requests.document.UpdateDocumentRequest;
@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class UpdateDocumentCommand extends Command {
+public class UpdateDocumentCommand extends ChangeCommand<DocumentId> {
 
   private final DocumentId documentId;
   private final String title;
@@ -18,7 +18,7 @@ public class UpdateDocumentCommand extends Command {
 
   public UpdateDocumentCommand(CommandRequester requester, DocumentId documentId, String title,
       String content, List<String> tags, UpdateDocumentRequest.DocumentOption option) {
-    super(requester);
+    super(requester, documentId);
     this.documentId = documentId;
     this.title = title;
     this.content = content;

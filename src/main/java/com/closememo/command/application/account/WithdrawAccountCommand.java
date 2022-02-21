@@ -6,11 +6,11 @@ import com.closememo.command.domain.account.AccountId;
 import lombok.Getter;
 
 @Getter
-public class ClearTokensCommand extends ChangeCommand<AccountId> {
+public class WithdrawAccountCommand extends ChangeCommand<AccountId> {
 
   private final AccountId accountId;
 
-  public ClearTokensCommand(CommandRequester requester, AccountId accountId) {
+  public WithdrawAccountCommand(CommandRequester requester, AccountId accountId) {
     super(requester, accountId);
     this.accountId = accountId;
   }

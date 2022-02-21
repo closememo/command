@@ -141,9 +141,9 @@ public class AccountCommandHandler {
     return savedAccount.getId();
   }
 
-  @ServiceActivator(inputChannel = "WidthdrawAccountCommand")
+  @ServiceActivator(inputChannel = "WithdrawAccountCommand")
   @Transactional
-  public Success handle(WidthdrawAccountCommand command) {
+  public Success handle(WithdrawAccountCommand command) {
     Account account = accountRepository.findById(command.getAccountId())
         .orElseThrow(AccountNotFoundException::new);
 

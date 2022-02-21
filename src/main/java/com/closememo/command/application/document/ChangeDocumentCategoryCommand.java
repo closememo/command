@@ -1,22 +1,21 @@
 package com.closememo.command.application.document;
 
-import com.closememo.command.application.Command;
+import com.closememo.command.application.ChangeCommand;
 import com.closememo.command.application.CommandRequester;
 import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.DocumentId;
-import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class ChangeDocumentsCategoryCommand extends Command {
+public class ChangeDocumentCategoryCommand extends ChangeCommand<DocumentId> {
 
-  private final List<DocumentId> documentIds;
+  private final DocumentId documentId;
   private final CategoryId categoryId;
 
-  public ChangeDocumentsCategoryCommand(CommandRequester requester, List<DocumentId> documentIds,
+  public ChangeDocumentCategoryCommand(CommandRequester requester, DocumentId documentId,
       CategoryId categoryId) {
-    super(requester);
-    this.documentIds = documentIds;
+    super(requester, documentId);
+    this.documentId = documentId;
     this.categoryId = categoryId;
   }
 }

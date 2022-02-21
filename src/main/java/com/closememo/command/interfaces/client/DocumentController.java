@@ -2,16 +2,14 @@ package com.closememo.command.interfaces.client;
 
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
-import com.closememo.command.application.document.ChangeDocumentsCategoryCommand;
+import com.closememo.command.application.document.ChangeDocumentCategoryCommand;
 import com.closememo.command.application.document.CreateDocumentCommand;
 import com.closememo.command.application.document.CreateLocalDocumentsCommand;
 import com.closememo.command.application.document.DeleteDocumentCommand;
-import com.closememo.command.application.document.DeleteDocumentsCommand;
 import com.closememo.command.application.document.MailDocumentsCommand;
 import com.closememo.command.application.document.UpdateDocumentCommand;
 import com.closememo.command.config.openapi.apitags.DocumentApiTag;
 import com.closememo.command.domain.account.AccountId;
-import com.closememo.command.domain.category.Category;
 import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.infra.projection.WaitForProjection;
@@ -110,18 +108,18 @@ public class DocumentController {
   @Operation(summary = "Change Document's category")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/change-documents-category")
-  public DocumentId changeDocumentsCategory(
+  public void changeDocumentsCategory(
       @RequestBody @Valid ChangeDocumentsCategoryRequest request,
       @AuthenticationPrincipal AccountId accountId) {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
-    List<DocumentId> documentIds = request.getDocumentIds().stream()
+    request.getDocumentIds().stream()
         .map(DocumentId::new)
-        .collect(Collectors.toList());
-    ChangeDocumentsCategoryCommand command = new ChangeDocumentsCategoryCommand(requester,
-        documentIds, new CategoryId(request.getCategoryId()));
-
-    return commandGateway.request(command);
+        .forEach(documentId -> {
+          ChangeDocumentCategoryCommand command = new ChangeDocumentCategoryCommand(requester,
+              documentId, new CategoryId(request.getCategoryId()));
+          commandGateway.request(command);
+        });
   }
 
   @WaitForProjection
@@ -146,12 +144,12 @@ public class DocumentController {
       @AuthenticationPrincipal AccountId accountId) {
 
     AccountCommandRequester requester = new AccountCommandRequester(accountId);
-    List<DocumentId> documentIds = request.getDocumentIds().stream()
+    request.getDocumentIds().stream()
         .map(DocumentId::new)
-        .collect(Collectors.toList());
-    DeleteDocumentsCommand command = new DeleteDocumentsCommand(requester, documentIds);
-
-    commandGateway.request(command);
+        .forEach(documentId -> {
+          DeleteDocumentCommand command = new DeleteDocumentCommand(requester, documentId);
+          commandGateway.request(command);
+        });
   }
 
   @Operation(summary = "Send email about Documents")

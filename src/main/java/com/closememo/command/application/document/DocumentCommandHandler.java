@@ -129,17 +129,16 @@ public class DocumentCommandHandler {
 
 
   @Transactional
-  @ServiceActivator(inputChannel = "ChangeDocumentsCategoryCommand")
-  public Success handle(ChangeDocumentsCategoryCommand command) {
+  @ServiceActivator(inputChannel = "ChangeDocumentCategoryCommand")
+  public Success handle(ChangeDocumentCategoryCommand command) {
     Category category = categoryRepository.findById(command.getCategoryId())
         .orElseThrow(CategoryNotFoundException::new);
+    Document document = documentRepository.findById(command.getDocumentId())
+        .orElseThrow(DocumentNotFoundException::new);
+    checkAuthority(command, document.getOwnerId());
 
-    documentRepository.findAllByIdIn(command.getDocumentIds())
-        .peek(document -> checkAuthority(command, document.getOwnerId()))
-        .forEach(document -> {
-          document.updateCategoryId(category.getId());
-          documentRepository.save(document);
-        });
+    document.updateCategoryId(category.getId());
+    documentRepository.save(document);
 
     return Success.getInstance();
   }
@@ -153,19 +152,6 @@ public class DocumentCommandHandler {
 
     document.delete();
     documentRepository.delete(document);
-
-    return Success.getInstance();
-  }
-
-  @Transactional
-  @ServiceActivator(inputChannel = "DeleteDocumentsCommand")
-  public Success handle(DeleteDocumentsCommand command) {
-    documentRepository.findAllByIdIn(command.getDocumentIds())
-        .peek(document -> checkAuthority(command, document.getOwnerId()))
-        .forEach(document -> {
-          document.delete();
-          documentRepository.delete(document);
-        });
 
     return Success.getInstance();
   }
