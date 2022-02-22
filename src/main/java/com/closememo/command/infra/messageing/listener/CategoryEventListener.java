@@ -11,6 +11,7 @@ import com.closememo.command.domain.category.Category;
 import com.closememo.command.domain.category.CategoryDeletedEvent;
 import com.closememo.command.domain.category.CategoryNotFoundException;
 import com.closememo.command.domain.category.CategoryRepository;
+import com.closememo.command.domain.document.DocumentCategoryUpdatedEvent;
 import com.closememo.command.domain.document.DocumentCreatedEvent;
 import com.closememo.command.domain.document.DocumentDeletedEvent;
 import com.closememo.command.infra.messageing.publisher.MessagePublisher;
@@ -53,6 +54,7 @@ public class CategoryEventListener {
   }
 
   @ServiceActivator(inputChannel = "DocumentCreatedEvent")
+  @Transactional
   public void handle(DocumentCreatedEvent payload) {
     Category category = categoryRepository.findById(payload.getCategoryId())
         .orElseThrow(CategoryNotFoundException::new);
@@ -61,7 +63,25 @@ public class CategoryEventListener {
     messagePublisher.publish(command);
   }
 
+  @ServiceActivator(inputChannel = "DocumentCategoryUpdatedEvent")
+  @Transactional
+  public void handle(DocumentCategoryUpdatedEvent payload) {
+    Category previousCategory = categoryRepository.findById(payload.getPreviousCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+    Category category = categoryRepository.findById(payload.getCategoryId())
+        .orElseThrow(CategoryNotFoundException::new);
+
+    DecreaseCategoryCountCommand decreaseCategoryCountCommand = new DecreaseCategoryCountCommand(
+        SystemCommandRequester.getInstance(), previousCategory.getId());
+    IncreaseCategoryCountCommand increaseCategoryCountCommand = new IncreaseCategoryCountCommand(
+        SystemCommandRequester.getInstance(), category.getId());
+
+    messagePublisher.publish(decreaseCategoryCountCommand);
+    messagePublisher.publish(increaseCategoryCountCommand);
+  }
+
   @ServiceActivator(inputChannel = "DocumentDeletedEvent")
+  @Transactional
   public void handle(DocumentDeletedEvent payload) {
     // 카테고리가 이미 삭제된 경우 무시한다.
     categoryRepository.findById(payload.getCategoryId()).ifPresent(category -> {

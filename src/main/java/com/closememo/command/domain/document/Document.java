@@ -161,9 +161,10 @@ public class Document {
   }
 
   public void updateCategoryId(CategoryId categoryId) {
+    CategoryId previousCategoryId = this.categoryId;
     this.categoryId = categoryId;
 
-    Events.register(new DocumentCategoryUpdatedEvent(this.id, this.categoryId));
+    Events.register(new DocumentCategoryUpdatedEvent(this.id, previousCategoryId, this.categoryId));
   }
 
   public void updateAutoTags(List<String> autoTags) {

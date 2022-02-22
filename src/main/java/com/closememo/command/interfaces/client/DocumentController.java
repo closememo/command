@@ -104,7 +104,7 @@ public class DocumentController {
     return commandGateway.request(command);
   }
 
-  @WaitForProjection
+  @WaitForProjection(timeout = 450)
   @Operation(summary = "Change Document's category")
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/change-documents-category")
