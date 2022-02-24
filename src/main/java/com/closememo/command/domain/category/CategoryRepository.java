@@ -14,8 +14,6 @@ public interface CategoryRepository {
 
   Optional<Category> findRootCategory(AccountId ownerId);
 
-  Stream<Category> findAllByOwnerId(AccountId ownerId);
-
   Stream<Category> findAllByParentId(CategoryId categoryId);
 
   long countByOwnerId(AccountId ownerId);

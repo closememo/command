@@ -44,13 +44,11 @@ public class CategoryEventListener {
   @ServiceActivator(inputChannel = "AccountDeletedEvent")
   @Transactional
   public void handle(AccountDeletedEvent payload) {
-    try (Stream<Category> categories = categoryRepository.findAllByOwnerId(payload.getAccountId())) {
-      categories.forEach(category -> {
-        DeleteCategoryCommand command = new DeleteCategoryCommand(
-            SystemCommandRequester.getInstance(), category.getId(), category.getIsRoot());
-        messagePublisher.publish(command);
-      });
-    }
+    Category rootCategory = categoryRepository.findRootCategory(payload.getAccountId())
+        .orElseThrow(CategoryNotFoundException::new);
+    DeleteCategoryCommand command = new DeleteCategoryCommand(
+        SystemCommandRequester.getInstance(), rootCategory.getId(), true);
+    messagePublisher.publish(command);
   }
 
   @ServiceActivator(inputChannel = "DocumentCreatedEvent")

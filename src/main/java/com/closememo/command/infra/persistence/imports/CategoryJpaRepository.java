@@ -11,8 +11,6 @@ public interface CategoryJpaRepository extends JpaRepository<Category, CategoryI
 
   Optional<Category> findByOwnerIdAndIsRootTrue(AccountId ownerId);
 
-  Stream<Category> findAllByOwnerId(AccountId ownerId);
-
   Stream<Category> findAllByParentId(CategoryId parentId);
 
   long countByOwnerId(AccountId ownerId);

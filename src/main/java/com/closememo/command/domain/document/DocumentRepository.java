@@ -15,8 +15,6 @@ public interface DocumentRepository {
 
   Optional<Document> findById(DocumentId documentId);
 
-  Stream<Document> findAllByOwnerId(AccountId accountId);
-
   Stream<Document> findAllByIdIn(Iterable<DocumentId> documentIds);
 
   Stream<Document> findAllByCategoryId(CategoryId categoryId);
