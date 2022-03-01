@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@EqualsAndHashCode(onlyExplicitlyIncluded=true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DocumentOption implements ValueObject {
