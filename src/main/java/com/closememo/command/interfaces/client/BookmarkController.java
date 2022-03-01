@@ -8,7 +8,6 @@ import com.closememo.command.config.openapi.apitags.BookmarkApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.bookmark.BookmarkId;
 import com.closememo.command.domain.document.DocumentId;
-import com.closememo.command.infra.projection.WaitForProjection;
 import com.closememo.command.interfaces.client.requests.bookmark.CreateBookmarkRequest;
 import com.closememo.command.interfaces.client.requests.bookmark.DeleteBookmarkRequest;
 import javax.validation.Valid;
@@ -27,7 +26,6 @@ public class BookmarkController {
     this.commandGateway = commandGateway;
   }
 
-  @WaitForProjection(timeout = 200)
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/create-bookmark")
   public BookmarkId createBookmark(@RequestBody @Valid CreateBookmarkRequest request,
@@ -38,7 +36,6 @@ public class BookmarkController {
     return commandGateway.request(command);
   }
 
-  @WaitForProjection(timeout = 200)
   @PreAuthorize("hasRole('USER')")
   @PostMapping("/delete-bookmark")
   public void deleteBookmark(@RequestBody @Valid DeleteBookmarkRequest request,
