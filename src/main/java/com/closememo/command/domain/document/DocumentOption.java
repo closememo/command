@@ -21,4 +21,8 @@ public class DocumentOption implements ValueObject {
   public DocumentOption(boolean hasAutoTag) {
     this.hasAutoTag = hasAutoTag;
   }
+
+  public static DocumentOption newOne() {
+    return new DocumentOption(true);
+  }
 }

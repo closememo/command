@@ -109,7 +109,7 @@ public class Document {
     validateContent(content);
 
     List<String> localTags = Collections.singletonList("오프라인");
-    DocumentOption option = new DocumentOption(true);
+    DocumentOption option = DocumentOption.newOne();
 
     Document document = new Document(documentRepository.nextId(), ownerId, categoryId, title,
         content, localTags, Collections.emptyList(), createdAt, option, 1L, Status.NORMAL);

@@ -12,6 +12,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -60,17 +61,20 @@ public class Account {
   @Column(nullable = false, columnDefinition = "VARCHAR(100)")
   @Convert(converter = RoleCollectionConverter.class)
   private Set<Role> roles;
+  @Embedded
+  private AccountOption option;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
   private Account(AccountId id, Social social, String socialId, String email,
-      List<Token> tokens, Set<Role> roles, ZonedDateTime createdAt) {
+      List<Token> tokens, Set<Role> roles, AccountOption option, ZonedDateTime createdAt) {
     this.id = id;
     this.social = social;
     this.socialId = socialId;
     this.email = email;
     this.tokens = tokens;
     this.roles = roles;
+    this.option = option;
     this.createdAt = createdAt;
   }
 
@@ -80,12 +84,13 @@ public class Account {
     validateEmail(accountRepository, email);
 
     Set<Role> userRoleSet = Set.of(Role.USER);
+    AccountOption option = AccountOption.newOne();
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Account account = new Account(accountRepository.nextId(), social, socialId, email,
-        tokens, userRoleSet, createdAt);
-    Events.register(new AccountCreatedEvent(account.getId(), email, tokens, userRoleSet, createdAt)
-        .needAck());
+        tokens, userRoleSet, option, createdAt);
+    Events.register(new AccountCreatedEvent(account.getId(), email, tokens, userRoleSet,
+        option, createdAt).needAck());
     return account;
   }
 
@@ -169,5 +174,21 @@ public class Account {
         .filter(token ->
             nowEpochSecond - buffer < token.getExp())
         .collect(Collectors.toList());
+  }
+
+  public void updateAccountOption(AccountOption.DocumentOrderType documentOrderType,
+      Integer documentCount) {
+
+    AccountOption.AccountOptionBuilder builder = this.option.toBuilder();
+    if (documentOrderType != null) {
+      builder.documentOrderType(documentOrderType);
+    }
+    if (documentCount != null) {
+      builder.documentCount(documentCount);
+    }
+
+    this.option = builder.build();
+
+    Events.register(new AccountOptionUpdatedEvent(this.id, this.option));
   }
 }

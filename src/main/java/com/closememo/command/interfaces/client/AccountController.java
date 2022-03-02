@@ -1,9 +1,5 @@
 package com.closememo.command.interfaces.client;
 
-import com.closememo.command.interfaces.client.requests.account.ClearTokensRequest;
-import com.closememo.command.interfaces.client.requests.account.LogoutRequest;
-import com.closememo.command.interfaces.client.requests.account.NaverAccountRequest;
-import com.closememo.command.interfaces.client.requests.account.ReissueTokenRequest;
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.AnonymousCommandRequester;
 import com.closememo.command.application.CommandGateway;
@@ -13,9 +9,15 @@ import com.closememo.command.application.account.LoginNaverAccountCommand;
 import com.closememo.command.application.account.LogoutCommand;
 import com.closememo.command.application.account.RegisterNaverAccountCommand;
 import com.closememo.command.application.account.ReissueTokenCommand;
+import com.closememo.command.application.account.UpdateAccountOptionCommand;
 import com.closememo.command.application.account.WithdrawAccountCommand;
 import com.closememo.command.config.openapi.apitags.AccountApiTag;
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.interfaces.client.requests.account.ClearTokensRequest;
+import com.closememo.command.interfaces.client.requests.account.LogoutRequest;
+import com.closememo.command.interfaces.client.requests.account.NaverAccountRequest;
+import com.closememo.command.interfaces.client.requests.account.ReissueTokenRequest;
+import com.closememo.command.interfaces.client.requests.account.UpdateAccountOptionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -84,6 +86,17 @@ public class AccountController {
   public void withdraw(@AuthenticationPrincipal AccountId accountId) {
     WithdrawAccountCommand command =
         new WithdrawAccountCommand(new AccountCommandRequester(accountId), accountId);
+    commandGateway.request(command);
+  }
+
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/update-account-option")
+  public void updateAccountOption(@RequestBody UpdateAccountOptionRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    UpdateAccountOptionCommand command =
+        new UpdateAccountOptionCommand(new AccountCommandRequester(accountId), accountId,
+            request.getDocumentOrderType(), request.getDocumentCount());
     commandGateway.request(command);
   }
 }

@@ -3,6 +3,7 @@ package com.closememo.command.application.account;
 import com.closememo.command.domain.account.Account;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.account.AccountNotFoundException;
+import com.closememo.command.domain.account.AccountOption;
 import com.closememo.command.domain.account.AccountRepository;
 import com.closememo.command.domain.account.Social;
 import com.closememo.command.domain.account.Token;
@@ -84,7 +85,7 @@ public class AccountCommandHandler {
 
   private NaverProfileResponse.NaverProfile getProfileResponse(String code, String status) {
     NaverTokenResponse tokenResponse = naverOAuthClient.getAccessToken(code, status);
-    NaverProfileResponse profileResponse =  naverApiClient.getNaverProfile(
+    NaverProfileResponse profileResponse = naverApiClient.getNaverProfile(
         tokenResponse.getTokenType(), tokenResponse.getAccessToken());
     return profileResponse.getNaverProfile();
   }
@@ -149,6 +150,21 @@ public class AccountCommandHandler {
 
     account.delete();
     accountRepository.delete(account);
+    return Success.getInstance();
+  }
+
+  @ServiceActivator(inputChannel = "UpdateAccountOptionCommand")
+  @Transactional
+  public Success handle(UpdateAccountOptionCommand command) {
+    Account account = accountRepository.findById(command.getAccountId())
+        .orElseThrow(AccountNotFoundException::new);
+
+    AccountOption.DocumentOrderType documentOrderType = (command.getDocumentOrderType() != null)
+        ? AccountOption.DocumentOrderType.valueOf(command.getDocumentOrderType().name()) : null;
+
+    account.updateAccountOption(documentOrderType, command.getDocumentCount());
+    accountRepository.save(account);
+
     return Success.getInstance();
   }
 }
