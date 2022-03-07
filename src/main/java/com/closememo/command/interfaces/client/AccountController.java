@@ -6,6 +6,7 @@ import com.closememo.command.application.CommandGateway;
 import com.closememo.command.application.account.ClearTokensCommand;
 import com.closememo.command.application.account.LoginAccount;
 import com.closememo.command.application.account.LoginNaverAccountCommand;
+import com.closememo.command.application.account.LoginTempAccountCommand;
 import com.closememo.command.application.account.LogoutCommand;
 import com.closememo.command.application.account.RegisterNaverAccountCommand;
 import com.closememo.command.application.account.ReissueTokenCommand;
@@ -14,6 +15,7 @@ import com.closememo.command.application.account.WithdrawAccountCommand;
 import com.closememo.command.config.openapi.apitags.AccountApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.interfaces.client.requests.account.ClearTokensRequest;
+import com.closememo.command.interfaces.client.requests.account.LoginTempAccountRequest;
 import com.closememo.command.interfaces.client.requests.account.LogoutRequest;
 import com.closememo.command.interfaces.client.requests.account.NaverAccountRequest;
 import com.closememo.command.interfaces.client.requests.account.ReissueTokenRequest;
@@ -50,6 +52,13 @@ public class AccountController {
     LoginNaverAccountCommand command =
         new LoginNaverAccountCommand(AnonymousCommandRequester.getInstance(),
             request.getCode(), request.getState());
+    return commandGateway.request(command);
+  }
+
+  @PostMapping("/login-temp-account")
+  public LoginAccount loginTempAccount(@RequestBody @Valid LoginTempAccountRequest request) {
+    LoginTempAccountCommand command =
+        new LoginTempAccountCommand(AnonymousCommandRequester.getInstance(), request.getIp());
     return commandGateway.request(command);
   }
 

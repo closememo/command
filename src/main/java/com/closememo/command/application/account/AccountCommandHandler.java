@@ -55,6 +55,28 @@ public class AccountCommandHandler {
     return new LoginAccount(savedAccount.getId(), token);
   }
 
+  @ServiceActivator(inputChannel = "LoginTempAccountCommand")
+  @Transactional
+  public LoginAccount handle(LoginTempAccountCommand command) {
+    String ip = command.getIp();
+    Token token = accountRepository.generateNewToken();
+    Optional<Account> optional = accountRepository.findBySocialId(ip);
+
+    Account account;
+    if (optional.isPresent()) {
+      // 계정이 존재하면 토큰을 추가한다.
+      account = optional.get();
+      account.addNewToken(token);
+    } else {
+      // 없으면 새로 만든다.
+      account = Account.newTempOne(accountRepository.nextId(),
+          ip, Collections.singletonList(token));
+    }
+    Account savedAccount = accountRepository.save(account);
+
+    return new LoginAccount(savedAccount.getId(), token);
+  }
+
   @ServiceActivator(inputChannel = "LoginNaverAccountCommand")
   @Transactional
   public LoginAccount handle(LoginNaverAccountCommand command) {

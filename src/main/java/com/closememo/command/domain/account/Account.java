@@ -94,6 +94,18 @@ public class Account {
     return account;
   }
 
+  public static Account newTempOne(AccountId id, String ip, List<Token> tokens) {
+    Set<Role> tempUserRoleSet = Set.of(Role.USER, Role.TEMP);
+    AccountOption option = AccountOption.newOne();
+    ZonedDateTime createdAt = ZonedDateTime.now();
+
+    Account account = new Account(id, Social.NONE, ip, StringUtils.EMPTY,
+        tokens, tempUserRoleSet, option, createdAt);
+    Events.register(new AccountCreatedEvent(account.getId(), StringUtils.EMPTY, tokens,
+        tempUserRoleSet, option, createdAt).needAck());
+    return account;
+  }
+
   private static void validateEmail(AccountRepository accountRepository, String email) {
     if (!EMAIL_PATTERN.matcher(email).find()) {
       throw new InvalidEmailException("invalid email pattern");
