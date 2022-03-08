@@ -15,5 +15,5 @@ public interface CategoryJpaRepository extends JpaRepository<Category, CategoryI
 
   long countByOwnerId(AccountId ownerId);
 
-  boolean existsByOwnerIdAndName(AccountId ownerId, String name);
+  boolean existsByOwnerIdAndParentIdAndName(AccountId ownerId, CategoryId parentId, String name);
 }

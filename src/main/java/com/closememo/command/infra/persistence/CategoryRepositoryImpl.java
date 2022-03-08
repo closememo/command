@@ -53,8 +53,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @Override
-  public boolean existsByOwnerIdAndName(AccountId ownerId, String name) {
-    return categoryJpaRepository.existsByOwnerIdAndName(ownerId, name);
+  public boolean existsByOwnerIdAndParentIdAndName(AccountId ownerId, CategoryId parentId, String name) {
+    return categoryJpaRepository.existsByOwnerIdAndParentIdAndName(ownerId, parentId, name);
   }
 
   @Override

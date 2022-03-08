@@ -18,7 +18,7 @@ public interface CategoryRepository {
 
   long countByOwnerId(AccountId ownerId);
 
-  boolean existsByOwnerIdAndName(AccountId ownerId, String name);
+  boolean existsByOwnerIdAndParentIdAndName(AccountId ownerId, CategoryId parentId, String name);
 
   void delete(Category category);
 }

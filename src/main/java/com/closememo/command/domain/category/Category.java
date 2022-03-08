@@ -75,7 +75,7 @@ public class Category {
     int depth = parentCategory.getDepth() + 1;
 
     validateCategoryLimit(categoryRepository, ownerId);
-    validateName(categoryRepository, ownerId, name);
+    validateName(categoryRepository, ownerId, parentId, name);
     validateDepth(depth);
 
     Category category = new Category(categoryRepository.nextId(), ownerId, name, createdAt,
@@ -87,7 +87,7 @@ public class Category {
 
   public void update(CategoryRepository categoryRepository, String name) {
 
-    validateName(categoryRepository, this.ownerId, name);
+    validateName(categoryRepository, this.ownerId, this.parentId, name);
 
     this.name = name;
 
@@ -115,9 +115,9 @@ public class Category {
   }
 
   private static void validateName(CategoryRepository categoryRepository,
-      AccountId ownerId, String name) {
+      AccountId ownerId, CategoryId parentId, String name) {
 
-    if (categoryRepository.existsByOwnerIdAndName(ownerId, name)) {
+    if (categoryRepository.existsByOwnerIdAndParentIdAndName(ownerId, parentId, name)) {
       throw new CategoryNameAlreadyExistException();
     }
 
