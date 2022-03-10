@@ -7,6 +7,10 @@ import com.closememo.command.domain.account.AccountOption;
 import com.closememo.command.domain.account.AccountRepository;
 import com.closememo.command.domain.account.Social;
 import com.closememo.command.domain.account.Token;
+import com.closememo.command.domain.category.Category;
+import com.closememo.command.domain.category.CategoryId;
+import com.closememo.command.domain.category.CategoryNotFoundException;
+import com.closememo.command.domain.category.CategoryRepository;
 import com.closememo.command.infra.http.naver.NaverApiClient;
 import com.closememo.command.infra.http.naver.NaverOAuthClient;
 import com.closememo.command.infra.http.naver.NaverProfileResponse;
@@ -24,13 +28,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountCommandHandler {
 
   private final AccountRepository accountRepository;
+  private final CategoryRepository categoryRepository;
   private final NaverApiClient naverApiClient;
   private final NaverOAuthClient naverOAuthClient;
 
   public AccountCommandHandler(AccountRepository accountRepository,
+      CategoryRepository categoryRepository,
       NaverApiClient naverApiClient,
       NaverOAuthClient naverOAuthClient) {
     this.accountRepository = accountRepository;
+    this.categoryRepository = categoryRepository;
     this.naverApiClient = naverApiClient;
     this.naverOAuthClient = naverOAuthClient;
   }
@@ -185,6 +192,22 @@ public class AccountCommandHandler {
         ? AccountOption.DocumentOrderType.valueOf(command.getDocumentOrderType().name()) : null;
 
     account.updateAccountOption(documentOrderType, command.getDocumentCount());
+    accountRepository.save(account);
+
+    return Success.getInstance();
+  }
+
+  @ServiceActivator(inputChannel = "UpdateAccountTrackCommand")
+  @Transactional
+  public Success handle(UpdateAccountTrackCommand command) {
+    Account account = accountRepository.findById(command.getAccountId())
+        .orElseThrow(AccountNotFoundException::new);
+
+    CategoryId categoryId = categoryRepository.findById(command.getRecentlyViewedCategoryId())
+        .map(Category::getId)
+        .orElseThrow(CategoryNotFoundException::new);
+
+    account.updateAccountTrack(categoryId);
     accountRepository.save(account);
 
     return Success.getInstance();

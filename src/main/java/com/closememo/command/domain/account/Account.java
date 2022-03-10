@@ -1,6 +1,7 @@
 package com.closememo.command.domain.account;
 
 import com.closememo.command.domain.Events;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.infra.persistence.converters.RoleCollectionConverter;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -63,11 +64,13 @@ public class Account {
   private Set<Role> roles;
   @Embedded
   private AccountOption option;
+  @Embedded
+  private AccountTrack track;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
-  private Account(AccountId id, Social social, String socialId, String email,
-      List<Token> tokens, Set<Role> roles, AccountOption option, ZonedDateTime createdAt) {
+  private Account(AccountId id, Social social, String socialId, String email, List<Token> tokens,
+      Set<Role> roles, AccountOption option, AccountTrack track, ZonedDateTime createdAt) {
     this.id = id;
     this.social = social;
     this.socialId = socialId;
@@ -75,6 +78,7 @@ public class Account {
     this.tokens = tokens;
     this.roles = roles;
     this.option = option;
+    this.track = track;
     this.createdAt = createdAt;
   }
 
@@ -85,24 +89,26 @@ public class Account {
 
     Set<Role> userRoleSet = Set.of(Role.USER);
     AccountOption option = AccountOption.newOne();
+    AccountTrack track = AccountTrack.emptyOne();
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Account account = new Account(accountRepository.nextId(), social, socialId, email,
-        tokens, userRoleSet, option, createdAt);
+        tokens, userRoleSet, option, track, createdAt);
     Events.register(new AccountCreatedEvent(account.getId(), email, tokens, userRoleSet,
-        option, createdAt).needAck());
+        option, track, createdAt).needAck());
     return account;
   }
 
   public static Account newTempOne(AccountId id, String ip, List<Token> tokens) {
     Set<Role> tempUserRoleSet = Set.of(Role.USER, Role.TEMP);
     AccountOption option = AccountOption.newOne();
+    AccountTrack track = AccountTrack.emptyOne();
     ZonedDateTime createdAt = ZonedDateTime.now();
 
     Account account = new Account(id, Social.NONE, ip, StringUtils.EMPTY,
-        tokens, tempUserRoleSet, option, createdAt);
+        tokens, tempUserRoleSet, option, track, createdAt);
     Events.register(new AccountCreatedEvent(account.getId(), StringUtils.EMPTY, tokens,
-        tempUserRoleSet, option, createdAt).needAck());
+        tempUserRoleSet, option, track, createdAt).needAck());
     return account;
   }
 
@@ -199,8 +205,20 @@ public class Account {
       builder.documentCount(documentCount);
     }
 
-    this.option = builder.build();
-
+    AccountOption option = builder.build();
+    if (this.option.equals(option)) {
+      return;
+    }
+    this.option = option;
     Events.register(new AccountOptionUpdatedEvent(this.id, this.option));
+  }
+
+  public void updateAccountTrack(CategoryId recentlyViewedCategoryId) {
+    AccountTrack track = new AccountTrack(recentlyViewedCategoryId.getId());
+    if (this.track != null && this.track.equals(track)) {
+      return;
+    }
+    this.track = track;
+    Events.register(new AccountTrackUpdatedEvent(this.id, this.track));
   }
 }

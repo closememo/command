@@ -11,15 +11,18 @@ import com.closememo.command.application.account.LogoutCommand;
 import com.closememo.command.application.account.RegisterNaverAccountCommand;
 import com.closememo.command.application.account.ReissueTokenCommand;
 import com.closememo.command.application.account.UpdateAccountOptionCommand;
+import com.closememo.command.application.account.UpdateAccountTrackCommand;
 import com.closememo.command.application.account.WithdrawAccountCommand;
 import com.closememo.command.config.openapi.apitags.AccountApiTag;
 import com.closememo.command.domain.account.AccountId;
+import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.interfaces.client.requests.account.ClearTokensRequest;
 import com.closememo.command.interfaces.client.requests.account.LoginTempAccountRequest;
 import com.closememo.command.interfaces.client.requests.account.LogoutRequest;
 import com.closememo.command.interfaces.client.requests.account.NaverAccountRequest;
 import com.closememo.command.interfaces.client.requests.account.ReissueTokenRequest;
 import com.closememo.command.interfaces.client.requests.account.UpdateAccountOptionRequest;
+import com.closememo.command.interfaces.client.requests.account.UpdateAccountTrackRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -106,6 +109,17 @@ public class AccountController {
     UpdateAccountOptionCommand command =
         new UpdateAccountOptionCommand(new AccountCommandRequester(accountId), accountId,
             request.getDocumentOrderType(), request.getDocumentCount());
+    commandGateway.request(command);
+  }
+
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/update-account-track")
+  public void updateAccountTrack(@RequestBody UpdateAccountTrackRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    UpdateAccountTrackCommand command =
+        new UpdateAccountTrackCommand(new AccountCommandRequester(accountId), accountId,
+            new CategoryId(request.getRecentlyViewedCategoryId()));
     commandGateway.request(command);
   }
 }
