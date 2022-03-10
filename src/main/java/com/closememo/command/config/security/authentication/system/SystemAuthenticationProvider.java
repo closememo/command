@@ -29,7 +29,7 @@ public class SystemAuthenticationProvider extends AbstractAuthenticationProvider
       return null;
     }
 
-    log.info("SYSTEM KEY INFO : {}", receivedSystemKey);
+    log.debug("SYSTEM KEY INFO : {}", receivedSystemKey);
 
     return new ServiceAuthentication("SYSTEM", authentication.getDetails(),
         Collections.singletonList(new SimpleGrantedAuthority("ROLE_SYSTEM")));
