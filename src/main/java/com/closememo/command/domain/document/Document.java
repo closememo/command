@@ -161,6 +161,10 @@ public class Document {
   }
 
   public void updateCategoryId(CategoryId categoryId) {
+    if (this.categoryId.equals(categoryId)) {
+      return;
+    }
+
     CategoryId previousCategoryId = this.categoryId;
     this.categoryId = categoryId;
 
