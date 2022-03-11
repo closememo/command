@@ -147,6 +147,6 @@ public class Category {
       throw new CannotDeleteRootCategoryException("Cannot delete root category.");
     }
 
-    Events.register(new CategoryDeletedEvent(this.id));
+    Events.register(new CategoryDeletedEvent(this.id).needAck());
   }
 }

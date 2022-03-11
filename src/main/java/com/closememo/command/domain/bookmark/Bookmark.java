@@ -58,7 +58,7 @@ public class Bookmark {
     Bookmark bookmark = new Bookmark(bookmarkRepository.nextId(), ownerId, documentId,
         count + 1, createdAt);
     Events.register(new BookmarkCreatedEvent(bookmark.getId(), ownerId, documentId,
-        count + 1, createdAt));
+        count + 1, createdAt).needAck());
     return bookmark;
   }
 
@@ -86,6 +86,6 @@ public class Bookmark {
   }
 
   public void delete() {
-    Events.register(new BookmarkDeletedEvent(this.id, this.ownerId));
+    Events.register(new BookmarkDeletedEvent(this.id, this.ownerId).needAck());
   }
 }
