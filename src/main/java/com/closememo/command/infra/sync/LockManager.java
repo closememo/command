@@ -20,10 +20,12 @@ public class LockManager {
   public void lock(Integer key) {
     CountableLock lock = lockHolderMap.get(key);
     if (lock == null) {
+      log.debug("[LOG] create new lock. key=" + key);
       lock = new CountableLock();
       lockHolderMap.put(key, lock);
     }
     lock.increaseCount();
+    log.debug("[LOG] increase lock count. key=" + key);
     lock.lock();
   }
 
@@ -34,9 +36,11 @@ public class LockManager {
       throw new RuntimeException();
     }
     if (lock.getCount() == 1) {
+      log.debug("[LOG] remove lock. key=" + key);
       lockHolderMap.remove(key);
     } else {
       lock.decreaseCount();
+      log.debug("[LOG] decrease lock count. key=" + key);
     }
     lock.unlock();
   }

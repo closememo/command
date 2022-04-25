@@ -66,11 +66,13 @@ public class AccountController {
   }
 
   @Operation(summary = "Reissue token")
+  @PreAuthorize("hasRole('USER')")
   @PostMapping("/reissue-token")
   public LoginAccount reissueToken(@RequestBody @Valid ReissueTokenRequest request,
       @AuthenticationPrincipal AccountId accountId) {
     ReissueTokenCommand command =
-        new ReissueTokenCommand(new AccountCommandRequester(accountId), request.getTokenId());
+        new ReissueTokenCommand(new AccountCommandRequester(accountId),
+            accountId, request.getTokenId());
     return commandGateway.request(command);
   }
 
