@@ -14,7 +14,7 @@ public interface AccountRepository {
 
   Optional<Account> findBySocialId(String socialId);
 
-  Optional<Account> findByTokenId(String tokenId);
+  Optional<Account> findByUnexpiredTokenId(String tokenId);
 
   boolean existsByEmail(String displayId);
 

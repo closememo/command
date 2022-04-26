@@ -9,7 +9,7 @@ public interface AccountJpaRepository extends JpaRepository<Account, AccountId> 
 
   Optional<Account> findBySocialId(String socialId);
 
-  Optional<Account> findByTokensTokenId(String tokenId);
+  Optional<Account> findByTokensTokenIdAndTokensExpGreaterThanEqual(String tokenId, long exp);
 
   boolean existsByEmail(String email);
 }

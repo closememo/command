@@ -1,5 +1,6 @@
 package com.closememo.command.application.account;
 
+import com.closememo.command.application.Success;
 import com.closememo.command.domain.account.Account;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.account.AccountNotFoundException;
@@ -7,6 +8,7 @@ import com.closememo.command.domain.account.AccountOption;
 import com.closememo.command.domain.account.AccountRepository;
 import com.closememo.command.domain.account.Social;
 import com.closememo.command.domain.account.Token;
+import com.closememo.command.domain.account.TokenNotFoundException;
 import com.closememo.command.domain.category.Category;
 import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.category.CategoryNotFoundException;
@@ -15,12 +17,12 @@ import com.closememo.command.infra.http.naver.NaverApiClient;
 import com.closememo.command.infra.http.naver.NaverOAuthClient;
 import com.closememo.command.infra.http.naver.NaverProfileResponse;
 import com.closememo.command.infra.http.naver.NaverTokenResponse;
-import com.closememo.command.application.Success;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,28 +125,32 @@ public class AccountCommandHandler {
   @Transactional
   public LoginAccount handle(ReissueTokenCommand command) {
     String oldTokenId = command.getTokenId();
-    Account account = accountRepository.findByTokenId(oldTokenId)
+    Account account = accountRepository.findByUnexpiredTokenId(oldTokenId)
         .orElseThrow(AccountNotFoundException::new);
 
-    Token oldToken = getToken(account.getTokens(), oldTokenId);
+    Token oldToken = pickToken(account.getTokens(), oldTokenId);
 
-    if (oldToken != null && StringUtils.isNotBlank(oldToken.getChildId())) {
-      Token childToken = getToken(account.getTokens(), oldToken.getChildId());
+    // child 가 있다는 것은 곧 삭제될 토큰이라는 뜻이고 이미 changeToken 처리가 되었다는 의미.
+    if (StringUtils.isNotBlank(oldToken.getChildId())) {
+      Token childToken = pickToken(account.getTokens(), oldToken.getChildId());
+      // 별도의 처리 없이 바로 미리 발급한 토큰(childToken)을 반환
       return new LoginAccount(account.getId(), childToken);
     }
 
-    Token token = accountRepository.generateNewToken();
+    Token newToken = accountRepository.generateNewToken();
 
-    account.changeToken(oldTokenId, token);
+    account.changeToken(oldToken, newToken);
     Account savedAccount = accountRepository.save(account);
 
-    return new LoginAccount(savedAccount.getId(), token);
+    return new LoginAccount(savedAccount.getId(), newToken);
   }
 
-  private static Token getToken(List<Token> tokens, String tokenId) {
+  @NonNull
+  private static Token pickToken(Collection<Token> tokens, String tokenId) {
     return tokens.stream()
         .filter(token -> StringUtils.equals(tokenId, token.getTokenId()))
-        .findFirst().orElse(null);
+        .findFirst()
+        .orElseThrow(TokenNotFoundException::new);
   }
 
   @ServiceActivator(inputChannel = "LogoutCommand")

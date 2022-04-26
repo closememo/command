@@ -48,8 +48,10 @@ public class AccountRepositoryImpl implements AccountRepository {
   }
 
   @Override
-  public Optional<Account> findByTokenId(String tokenId) {
-    return accountJpaRepository.findByTokensTokenId(tokenId);
+  public Optional<Account> findByUnexpiredTokenId(String tokenId) {
+    ZonedDateTime now = ZonedDateTime.now();
+    return accountJpaRepository.findByTokensTokenIdAndTokensExpGreaterThanEqual(
+        tokenId, now.toEpochSecond());
   }
 
   @Override
