@@ -4,6 +4,7 @@
   <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
   <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
+  <springProperty name="componentName" source="spring.application.name" defaultValue=""/>
   <springProperty name="phase" source="spring.profiles.active" defaultValue="dev"/>
   <springProperty name="defaultLoggingLevel" source="logging.level.root" defaultValue="info"/>
 
@@ -14,11 +15,8 @@
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>INFO</level>
     </filter>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-        <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter"/>
-        <appendLineSeparator>true</appendLineSeparator>
-      </layout>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"component": "${componentName}"}</customFields>
     </encoder>
     <file>${LOG_DIR}/${JSON_LOG_FILE}</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
