@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AckFutureManager {
 
-  private static final long SLEEP_TIMEOUT = 5000;
-  private static final long WAIT_TIMEOUT = 3000;
+  private static final long SLEEP_TIMEOUT = 7000;
+  private static final long WAIT_TIMEOUT = 5000;
 
   private final ConcurrentMap<String, Future<?>> ackWaitMap;
   private final ThreadPoolTaskExecutor ackEventTaskExecutor;

@@ -41,7 +41,7 @@ public class Account {
 
   private static final int MIN_EMAIL_LENGTH = 3;
   private static final int MAX_EMAIL_LENGTH = 100;
-  private static final int NUMBER_OF_TOKEN_LIMIT = 20;
+  private static final int NUMBER_OF_TOKEN_LIMIT = 10;
   private static final int TOKEN_EXP_BUFFER_SECONDS = 1; // 종종 하나의 토큰으로 여러개의 요청이 올 수 있다. 바로 삭제하지 않고 버퍼를 둔다.
   private static final Pattern EMAIL_PATTERN = Pattern.compile("[0-9a-zA-Z-_.]+@[0-9a-zA-Z-]+");
 
