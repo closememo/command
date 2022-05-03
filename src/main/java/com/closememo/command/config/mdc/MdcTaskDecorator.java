@@ -1,6 +1,7 @@
 package com.closememo.command.config.mdc;
 
 import java.util.Map;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
 
@@ -13,7 +14,9 @@ public class MdcTaskDecorator implements TaskDecorator {
   public Runnable decorate(Runnable runnable) {
     Map<String, String> contextMap = MDC.getCopyOfContextMap();
     return () -> {
-      MDC.setContextMap(contextMap);
+      if (MapUtils.isNotEmpty(contextMap)) {
+        MDC.setContextMap(contextMap);
+      }
       runnable.run();
     };
   }
