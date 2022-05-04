@@ -16,6 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class MdcFilter extends OncePerRequestFilter {
 
+  private static final String X_USER_IP = "X-USER-IP";
+
   private static final String NONE = "NONE";
   private static final String SYSTEM = "SYSTEM";
   private static final String UNKNOWN = "UNKNOWN";
@@ -30,7 +32,9 @@ public class MdcFilter extends OncePerRequestFilter {
     MdcUserInfo mdcUserInfo = getMdcUserInfo(authentication);
     MDC.put("userType", mdcUserInfo.type);
     MDC.put("userId", mdcUserInfo.id);
-    MDC.put("remoteAddr", request.getRemoteAddr());
+    MDC.put("userIp", request.getHeader(X_USER_IP));
+    MDC.put("clientIp", request.getRemoteAddr());
+    MDC.put("url", request.getRequestURL().toString());
 
     filterChain.doFilter(request, response);
   }
