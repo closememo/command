@@ -31,9 +31,13 @@ public class LockAspect {
       ChangeCommand<? extends Identifier> command = (ChangeCommand<? extends Identifier>) payload;
       Integer hash = command.getHash();
 
+      Object result;
       lockManager.lock(hash);
-      Object result = pjp.proceed();
-      lockManager.unlock(hash);
+      try {
+        result = pjp.proceed();
+      } finally {
+        lockManager.unlock(hash);
+      }
 
       return result;
     } else {
