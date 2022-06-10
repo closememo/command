@@ -38,7 +38,7 @@ public class LockManager {
       log.error("[LOG] lock doesn't exist. key=" + key);
       throw new RuntimeException();
     }
-    if (lock.getCount() == 1) {
+    if (needToRemove(lock)) {
       log.debug("[LOG] remove lock. key=" + key);
       lockHolderMap.remove(key);
     } else {
@@ -46,5 +46,9 @@ public class LockManager {
       log.debug("[LOG] decrease lock count. key=" + key);
     }
     lock.unlock();
+  }
+
+  private static synchronized boolean needToRemove(CountableLock lock) {
+    return lock.getCount() == 1;
   }
 }

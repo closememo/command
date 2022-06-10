@@ -1,15 +1,16 @@
 package com.closememo.command.infra.sync;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CountableLock {
 
   private final ReentrantLock lock;
-  private int count;
+  private final AtomicInteger count;
 
   public CountableLock() {
     this.lock = new ReentrantLock();
-    this.count = 0;
+    this.count = new AtomicInteger();
   }
 
   public void lock() {
@@ -21,14 +22,14 @@ public class CountableLock {
   }
 
   public int getCount() {
-    return count;
+    return count.get();
   }
 
   public void increaseCount() {
-    count += 1;
+    count.incrementAndGet();
   }
 
   public void decreaseCount() {
-    count -= 1;
+    count.decrementAndGet();
   }
 }
