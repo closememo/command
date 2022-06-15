@@ -179,6 +179,18 @@ public class DocumentCommandHandler {
   }
 
   @Transactional
+  @ServiceActivator(inputChannel = "ClearDifferenceCommand")
+  public Success handle(ClearDifferenceCommand command) {
+    Document document = documentRepository.findById(command.getDocumentId())
+        .orElseThrow(DocumentNotFoundException::new);
+    checkAuthority(command, document.getOwnerId());
+
+    document.clearDifferences();
+
+    return Success.getInstance();
+  }
+
+  @Transactional
   @ServiceActivator(inputChannel = "UpdateAutoTagsCommand")
   public Success handle(UpdateAutoTagsCommand command) {
     if (!command.isSystemRequester()) {

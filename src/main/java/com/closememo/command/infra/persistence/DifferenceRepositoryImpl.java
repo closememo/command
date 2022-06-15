@@ -32,6 +32,11 @@ public class DifferenceRepositoryImpl implements DifferenceRepository {
   }
 
   @Override
+  public long countByDocumentId(DocumentId documentId) {
+    return differenceJpaRepository.countByDocumentId(documentId);
+  }
+
+  @Override
   public Optional<Difference> findById(DifferenceId differenceId) {
     return differenceJpaRepository.findById(differenceId);
   }

@@ -236,6 +236,10 @@ public class Document {
         .collect(Collectors.toList());
   }
 
+  public void clearDifferences() {
+    Events.register(new DocumentDifferencesClearedEvent(this.id));
+  }
+
   public void delete() {
     Events.register(new DocumentDeletedEvent(this.id, this.categoryId));
   }

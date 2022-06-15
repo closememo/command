@@ -1,10 +1,10 @@
 package com.closememo.command.application.difference;
 
+import com.closememo.command.application.Success;
 import com.closememo.command.domain.difference.Difference;
 import com.closememo.command.domain.difference.DifferenceId;
 import com.closememo.command.domain.difference.DifferenceNotFoundException;
 import com.closememo.command.domain.difference.DifferenceRepository;
-import com.closememo.command.application.Success;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ public class DifferenceCommandHandler {
   @ServiceActivator(inputChannel = "CreateDifferenceCommand")
   @Transactional
   public DifferenceId handle(CreateDifferenceCommand command) {
-    Difference difference = Difference.newOne(differenceRepository.nextId(),
+    Difference difference = Difference.newOne(differenceRepository, command.getOwnerId(),
         command.getDocumentId(), command.getDocumentVersion(), command.getLineDeltas());
 
     Difference savedDifference = differenceRepository.save(difference);

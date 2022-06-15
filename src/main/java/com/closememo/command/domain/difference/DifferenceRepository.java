@@ -10,6 +10,8 @@ public interface DifferenceRepository {
 
   Difference save(Difference difference);
 
+  long countByDocumentId(DocumentId documentId);
+
   Optional<Difference> findById(DifferenceId differenceId);
 
   List<Difference> findAllByDocumentId(DocumentId documentId);

@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DifferenceJpaRepository extends JpaRepository<Difference, DifferenceId> {
 
+  long countByDocumentId(DocumentId documentId);
+
   List<Difference> findAllByDocumentId(DocumentId documentId);
 }

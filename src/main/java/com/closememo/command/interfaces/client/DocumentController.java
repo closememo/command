@@ -3,6 +3,7 @@ package com.closememo.command.interfaces.client;
 import com.closememo.command.application.AccountCommandRequester;
 import com.closememo.command.application.CommandGateway;
 import com.closememo.command.application.document.ChangeDocumentCategoryCommand;
+import com.closememo.command.application.document.ClearDifferenceCommand;
 import com.closememo.command.application.document.CreateDocumentCommand;
 import com.closememo.command.application.document.CreateLocalDocumentsCommand;
 import com.closememo.command.application.document.DeleteDocumentCommand;
@@ -14,6 +15,7 @@ import com.closememo.command.domain.category.CategoryId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.infra.projection.WaitForProjection;
 import com.closememo.command.interfaces.client.requests.document.ChangeDocumentsCategoryRequest;
+import com.closememo.command.interfaces.client.requests.document.ClearDifferencesRequest;
 import com.closememo.command.interfaces.client.requests.document.CreateDocumentRequest;
 import com.closememo.command.interfaces.client.requests.document.CreateLocalDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.DeleteDocumentRequest;
@@ -167,5 +169,18 @@ public class DocumentController {
         accountId, documentIds, needToDelete);
 
     commandGateway.request(command, 10000);
+  }
+
+  @WaitForProjection
+  @PreAuthorize("hasRole('USER')")
+  @PostMapping("/clear-document-differences")
+  public void clearDocumentDifferences(@RequestBody @Valid ClearDifferencesRequest request,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    AccountCommandRequester requester = new AccountCommandRequester(accountId);
+    DocumentId documentId = new DocumentId(request.getDocumentId());
+    ClearDifferenceCommand command = new ClearDifferenceCommand(requester, documentId);
+
+    commandGateway.request(command);
   }
 }
