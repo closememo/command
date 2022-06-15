@@ -35,7 +35,7 @@ class DocumentDiffUtilsTest {
 
     printLineInfos(str1, str2, lineDeltas);
 
-    assertEquals(lineDeltas.size(), 1);
+    assertEquals(lineDeltas.size(), 2);
     LineDelta firstLineDelta = lineDeltas.get(0);
     assertEquals(firstLineDelta.getType(), DeltaType.CHANGE);
   }
@@ -50,8 +50,8 @@ class DocumentDiffUtilsTest {
 
     printLineInfos(str1, str2, lineDeltas);
 
-    assertEquals(lineDeltas.size(), 1);
+    assertEquals(lineDeltas.size(), 2);
     LineDelta firstLineDelta = lineDeltas.get(0);
-    assertEquals(firstLineDelta.getType(), DeltaType.CHANGE);
+    assertEquals(firstLineDelta.getType(), DeltaType.EQUAL);
   }
 }
