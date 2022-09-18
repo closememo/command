@@ -36,6 +36,7 @@ public class Document {
   private static final int MAX_CONTENT_LENGTH = 10000;
   private static final int MAX_TAG_LENGTH = 25;
   private static final String VALID_TAG_CHARS = "[_\\dA-Za-zㄱ-ㆎ가-힣ힰ-ퟆퟋ-ퟻＡ-Ｚａ-ｚｦ-ﾾￂ-ￇￊ-ￏￒ-ￗￚ-ￜ]+";
+  private static final String LOCAL_DOCUMENT_TAG = "오프라인";
 
   @EmbeddedId
   private DocumentId id;
@@ -108,7 +109,7 @@ public class Document {
     validateTitle(title);
     validateContent(content);
 
-    List<String> localTags = Collections.singletonList("오프라인");
+    List<String> localTags = Collections.singletonList(LOCAL_DOCUMENT_TAG);
     DocumentOption option = DocumentOption.newOne();
 
     Document document = new Document(documentRepository.nextId(), ownerId, categoryId, title,

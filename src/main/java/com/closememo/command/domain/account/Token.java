@@ -3,10 +3,12 @@ package com.closememo.command.domain.account;
 import com.closememo.command.domain.ValueObject;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
+@EqualsAndHashCode
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Token implements ValueObject {

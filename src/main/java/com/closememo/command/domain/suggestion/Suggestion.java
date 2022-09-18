@@ -64,6 +64,8 @@ public class Suggestion {
       throw new CannotChangeSuggestionException("suggestion cannot be changed");
     }
 
+    validateContent(content);
+
     this.content = content;
 
     Events.register(new SuggestionUpdatedEvent(this.id, this.content, this.status));

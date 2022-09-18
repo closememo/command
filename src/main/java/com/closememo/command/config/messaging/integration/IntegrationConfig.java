@@ -21,6 +21,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.EventDrivenConsumer;
 import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
+import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
@@ -92,8 +93,12 @@ public class IntegrationConfig {
   @Bean
   public IntegrationFlow routeKafkaInboundMessage() {
     return IntegrationFlows.from(inboundKafkaMessageChannel())
-        .route("headers.kafka_receivedTopic")
+        .route(router())
         .get();
+  }
+
+  private HeaderValueRouter router() {
+    return new HeaderValueRouter(KafkaHeaders.RECEIVED_TOPIC);
   }
 
   @Component
