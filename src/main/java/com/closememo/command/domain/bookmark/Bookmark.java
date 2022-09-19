@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Bookmark {
 
-  private static final int NUMBER_OF_BOOKMARK_LIMIT = 100;
+  protected static final int NUMBER_OF_BOOKMARK_LIMIT = 100;
 
   @EmbeddedId
   private BookmarkId id;

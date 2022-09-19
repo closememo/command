@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Suggestion {
 
-  private static final int NUMBER_OF_SUGGESTION_LIMIT = 50;
-  private static final int MAX_CONTENT_LENGTH = 1000;
+  protected static final int NUMBER_OF_SUGGESTION_LIMIT = 50;
+  protected static final int MAX_CONTENT_LENGTH = 1000;
 
   @EmbeddedId
   private SuggestionId id;

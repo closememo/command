@@ -30,13 +30,13 @@ import org.springframework.lang.NonNull;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Document {
 
-  private static final int NUMBER_OF_DOCUMENT_LIMIT = 500;
-  private static final int NUMBER_OF_TAG_LIMIT = 100;
-  private static final int MAX_TITLE_LENGTH = 100;
-  private static final int MAX_CONTENT_LENGTH = 10000;
-  private static final int MAX_TAG_LENGTH = 25;
+  protected static final int NUMBER_OF_DOCUMENT_LIMIT = 500;
+  protected static final int NUMBER_OF_TAG_LIMIT = 100;
+  protected static final int MAX_TITLE_LENGTH = 100;
+  protected static final int MAX_CONTENT_LENGTH = 10000;
+  protected static final int MAX_TAG_LENGTH = 25;
   private static final String VALID_TAG_CHARS = "[_\\dA-Za-zㄱ-ㆎ가-힣ힰ-ퟆퟋ-ퟻＡ-Ｚａ-ｚｦ-ﾾￂ-ￇￊ-ￏￒ-ￗￚ-ￜ]+";
-  private static final String LOCAL_DOCUMENT_TAG = "오프라인";
+  protected static final String LOCAL_DOCUMENT_TAG = "오프라인";
 
   @EmbeddedId
   private DocumentId id;
