@@ -20,7 +20,7 @@ public class BookmarkId implements Identifier {
 
   public BookmarkId(String id) {
     if (StringUtils.isBlank(id)) {
-      throw new IllegalArgumentException("CategoryId must not be null or empty string.");
+      throw new IllegalArgumentException("BookmarkId must not be null or empty string.");
     }
     this.id = id;
   }

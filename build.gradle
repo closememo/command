@@ -36,6 +36,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
 
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.mockito:mockito-inline:4.8.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
