@@ -11,24 +11,26 @@
   <property name="LOG_DIR" value="/home/deployer/logs"/>
   <property name="JSON_LOG_FILE" value="json.log"/>
 
-  <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>INFO</level>
-    </filter>
-    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <customFields>{"component": "${componentName}"}</customFields>
-    </encoder>
-    <file>${LOG_DIR}/${JSON_LOG_FILE}</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_DIR}/${JSON_LOG_FILE}.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
-      <maxFileSize>100MB</maxFileSize>
-      <totalSizeCap>1GB</totalSizeCap>
-      <maxHistory>7</maxHistory>
-    </rollingPolicy>
-  </appender>
+  <springProfile name="!test">
+    <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <level>INFO</level>
+      </filter>
+      <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        <customFields>{"component": "${componentName}"}</customFields>
+      </encoder>
+      <file>${LOG_DIR}/${JSON_LOG_FILE}</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_DIR}/${JSON_LOG_FILE}.%d{yyyy-MM-dd}.%i.gz}</fileNamePattern>
+        <maxFileSize>100MB</maxFileSize>
+        <totalSizeCap>1GB</totalSizeCap>
+        <maxHistory>7</maxHistory>
+      </rollingPolicy>
+    </appender>
 
-  <root level="${defaultLoggingLevel}">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="JSON"/>
-  </root>
+    <root level="${defaultLoggingLevel}">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="JSON"/>
+    </root>
+  </springProfile>
 </configuration>
