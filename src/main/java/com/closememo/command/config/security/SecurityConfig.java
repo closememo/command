@@ -10,20 +10,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Component;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
   private static final String[] IGNORE_FILTER_URLS = new String[]{
       "/command/swagger-ui/**", "/command/swagger-ui.html", "/health-check"
@@ -35,27 +37,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     this.customFilterInitializer = customFilterInitializer;
   }
 
-  @Override
-  public void configure(WebSecurity web) {
-    web.ignoring().antMatchers(IGNORE_FILTER_URLS);
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.ignoring().requestMatchers(IGNORE_FILTER_URLS);
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     // filter 추가
     customFilterInitializer.setCustomFilters(http);
     // 기타 설정
     http
-        .csrf().disable()
-        .sessionManagement(SessionManagementConfigurer ->
-            SessionManagementConfigurer
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(sessionManagementConfigurer ->
+            sessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .headers(HeadersConfigurer ->
-            HeadersConfigurer
-                .frameOptions().disable())
+        .headers(headersConfigurer ->
+            headersConfigurer
+                .frameOptions(FrameOptionsConfig::disable))
         .exceptionHandling(exceptionHandlingConfigurer ->
             exceptionHandlingConfigurer
                 .authenticationEntryPoint(http403ForbiddenEntryPoint()));
+
+    return http.build();
   }
 
   @Bean
