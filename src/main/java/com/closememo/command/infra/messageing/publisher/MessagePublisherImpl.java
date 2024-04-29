@@ -1,9 +1,9 @@
 package com.closememo.command.infra.messageing.publisher;
 
+import com.closememo.command.application.Command;
 import com.closememo.command.config.messaging.integration.IntegrationConfig;
 import com.closememo.command.domain.DomainEvent;
 import com.closememo.command.infra.helper.JsonUtils;
-import com.closememo.command.application.Command;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
