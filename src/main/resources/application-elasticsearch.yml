@@ -12,6 +12,11 @@ elasticsearch:
       connection-timeout: 5000
       socket-timeout: 60000
 
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
 ---
 
 spring:
