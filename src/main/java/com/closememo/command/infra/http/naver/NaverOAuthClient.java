@@ -1,50 +1,34 @@
 package com.closememo.command.infra.http.naver;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import feign.codec.ErrorDecoder;
+import feign.codec.ErrorDecoder.Default;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Component
-public class NaverOAuthClient {
+@FeignClient(value = "naver-oauth-client", configuration = NaverOAuthClient.NaverOauthClientConfig.class)
+public interface NaverOAuthClient {
 
-  private final RestTemplate restTemplate;
-  private final NaverOAuthProperties properties;
+  @GetMapping("/oauth2.0/token")
+  NaverTokenResponse getAccessToken(@RequestParam("code") String code, @RequestParam String state);
 
-  public NaverOAuthClient(RestTemplateBuilder restTemplateBuilder,
-      NaverOAuthProperties properties) {
-    this.restTemplate = restTemplateBuilder
-        .rootUri(properties.getRootUri())
-        .build();
-    this.properties = properties;
-  }
+  class NaverOauthClientConfig {
 
-  public NaverTokenResponse getAccessToken(String code, String state) {
-    String uri = UriComponentsBuilder.fromUriString("/oauth2.0/token")
-        .queryParam("grant_type", "authorization_code")
-        .queryParam("client_id", properties.getClientId())
-        .queryParam("client_secret", properties.getClientSecret())
-        .queryParam("code", code)
-        .queryParam("state", state)
-        .build()
-        .toUriString();
-
-    ResponseEntity<NaverTokenResponse> response = restTemplate.getForEntity(
-        uri, NaverTokenResponse.class);
-
-    validateResponse(response, "[NAVER OAuth] getAccessToken failed.");
-    return response.getBody();
-  }
-
-  private void validateResponse(@NonNull ResponseEntity<?> response, String errorMessage) {
-    if (response.getStatusCode().is5xxServerError()) {
-      throw new NaverOAuthInternalServerException(errorMessage);
-    }
-
-    if (response.getStatusCode().isError()) {
-      throw new NaverOAuthClientException(errorMessage);
+    @Bean
+    public ErrorDecoder errorDecoder() {
+      return (methodKey, response) -> {
+        String url = response.request().url();
+        HttpStatusCode status = HttpStatusCode.valueOf(response.status());
+        if (status.is5xxServerError()) {
+          return new NaverOAuthInternalServerException("url=" + url);
+        }
+        if (status.isError()) {
+          return new NaverOAuthClientException("url=" + url);
+        }
+        return new Default().decode(methodKey, response);
+      };
     }
   }
 }

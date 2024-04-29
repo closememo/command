@@ -1,48 +1,34 @@
 package com.closememo.command.infra.http.naver;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import feign.codec.ErrorDecoder;
+import feign.codec.ErrorDecoder.Default;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-@Component
-public class NaverApiClient {
+@FeignClient(value = "naver-api-client", configuration = NaverApiClient.NaverApiClientConfig.class)
+public interface NaverApiClient {
 
-  private final RestTemplate restTemplate;
+  @GetMapping("/v1/nid/me")
+  NaverProfileResponse getNaverProfile(@RequestHeader("Authorization") String authorization);
 
-  public NaverApiClient(RestTemplateBuilder restTemplateBuilder,
-      NaverApiProperties naverApiProperties) {
-    this.restTemplate = restTemplateBuilder
-        .rootUri(naverApiProperties.getRootUri())
-        .build();
-  }
+  class NaverApiClientConfig {
 
-  public NaverProfileResponse getNaverProfile(String tokenType, String accessToken) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization", tokenType + " " + accessToken);
-
-    RequestEntity<Void> requestEntity = RequestEntity
-        .get("/v1/nid/me")
-        .headers(headers)
-        .build();
-
-    ResponseEntity<NaverProfileResponse> response = restTemplate.exchange(
-        requestEntity, NaverProfileResponse.class);
-
-    validateResponse(response, "[NAVER OpenAPI] getNaverProfile failed.");
-    return response.getBody();
-  }
-
-  private void validateResponse(@NonNull ResponseEntity<?> response, String errorMessage) {
-    if (response.getStatusCode().is5xxServerError()) {
-      throw new NaverApiInternalServerException(errorMessage);
-    }
-
-    if (response.getStatusCode().isError()) {
-      throw new NaverApiClientException(errorMessage);
+    @Bean
+    public ErrorDecoder errorDecoder() {
+      return (methodKey, response) -> {
+        String url = response.request().url();
+        HttpStatusCode status = HttpStatusCode.valueOf(response.status());
+        if (status.is5xxServerError()) {
+          return new NaverApiInternalServerException("url=" + url);
+        }
+        if (status.isError()) {
+          return new NaverApiClientException("url=" + url);
+        }
+        return new Default().decode(methodKey, response);
+      };
     }
   }
 }

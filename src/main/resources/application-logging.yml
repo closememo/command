@@ -13,6 +13,7 @@ logging:
   level:
     com.closememo.command: DEBUG
     com.zaxxer.hikari: TRACE
+    com.closememo.command.infra.http: DEBUG
     org.hibernate.metamodel.model.convert.internal: TRACE
     org.hibernate.resource.jdbc.internal: TRACE
     org.springframework.jdbc.core: TRACE

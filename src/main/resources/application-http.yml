@@ -1,17 +1,17 @@
-http:
-  rest-template:
-    configs:
-      default:
-        read-timeout: 3000
-        connection-timeout: 1000
-        max-connection-count: 30
-        max-connection-per-route: 30
-
-  naver:
-    auth:
-      root-uri: https://nid.naver.com
-    api:
-      root-uri: https://openapi.naver.com
+spring:
+  cloud:
+    openfeign:
+      httpclient:
+        hc5:
+          enabled: true
+        max-connections: 50
+        max-connections-per-route: 30
+      client:
+        default-config: default
+        config:
+          default:
+            connect-timeout: 1000
+            read-timeout: 3000
 
 ---
 
@@ -20,16 +20,25 @@ spring:
     activate:
       on-profile: local
 
-http:
-  naver:
-    auth:
-      client-id: ${DEV_NAVER_CLIENT_ID}
-      client-secret: ${DEV_NAVER_CLIENT_SECRET}
-
-  mail:
-    root-uri: http://localhost:10083
-    token: ${DEV_MAIL_TOKEN}
-    read-timeout: 10000
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            logger-level: FULL
+          mail-client:
+            url: http://localhost:10083
+            read-timeout: 10000
+            default-request-headers:
+              X-SYSTEM-KEY: ${DEV_MAIL_TOKEN}
+          naver-api-client:
+            url: https://openapi.naver.com
+          naver-oauth-client:
+            url: https://nid.naver.com
+            default-query-parameters:
+              client_id: ${DEV_NAVER_CLIENT_ID}
+              client_secret: ${DEV_NAVER_CLIENT_SECRET}
+              grant_type: authorization_code
 
 ---
 
@@ -38,16 +47,23 @@ spring:
     activate:
       on-profile: dev
 
-http:
-  naver:
-    auth:
-      client-id: ${DEV_NAVER_CLIENT_ID}
-      client-secret: ${DEV_NAVER_CLIENT_SECRET}
-
-  mail:
-    root-uri: http://dev-closememo-mailsender.default.svc.cluster.local:10083
-    token: ${DEV_MAIL_TOKEN}
-    read-timeout: 10000
+  cloud:
+    openfeign:
+      client:
+        config:
+          mail-client:
+            url: http://dev-closememo-mailsender.default.svc.cluster.local:10083
+            read-timeout: 10000
+            default-request-headers:
+              X-SYSTEM-KEY: ${DEV_MAIL_TOKEN}
+          naver-api-client:
+            url: https://openapi.naver.com
+          naver-oauth-client:
+            url: https://nid.naver.com
+            default-query-parameters:
+              client_id: ${DEV_NAVER_CLIENT_ID}
+              client_secret: ${DEV_NAVER_CLIENT_SECRET}
+              grant_type: authorization_code
 
 ---
 
@@ -56,13 +72,20 @@ spring:
     activate:
       on-profile: real
 
-http:
-  naver:
-    auth:
-      client-id: ${NAVER_CLIENT_ID}
-      client-secret: ${NAVER_CLIENT_SECRET}
-
-  mail:
-    root-uri: http://closememo-mailsender.default.svc.cluster.local:10083
-    token: ${MAIL_TOKEN}
-    read-timeout: 10000
+  cloud:
+    openfeign:
+      client:
+        config:
+          mail-client:
+            url: http://closememo-mailsender.default.svc.cluster.local:10083
+            read-timeout: 10000
+            default-request-headers:
+              X-SYSTEM-KEY: ${MAIL_TOKEN}
+          naver-api-client:
+            url: https://openapi.naver.com
+          naver-oauth-client:
+            url: https://nid.naver.com
+            default-query-parameters:
+              client_id: ${NAVER_CLIENT_ID}
+              client_secret: ${NAVER_CLIENT_SECRET}
+              grant_type: authorization_code

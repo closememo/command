@@ -1,49 +1,34 @@
 package com.closememo.command.infra.http.mail;
 
-import java.time.Duration;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import feign.codec.ErrorDecoder;
+import feign.codec.ErrorDecoder.Default;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@Component
-public class MailClient {
+@FeignClient(value = "mail-client", configuration = MailClient.MailClientConfig.class)
+public interface MailClient {
 
-  public static final String X_SYSTEM_KEY_HEADER = "X-SYSTEM-KEY";
+  @GetMapping("/mail-sender/system/send-mail")
+  void sendMail(@RequestBody SendMailRequest request);
 
-  private final RestTemplate restTemplate;
+  class MailClientConfig {
 
-  public MailClient(RestTemplateBuilder restTemplateBuilder,
-      MailProperties properties) {
-
-    this.restTemplate = restTemplateBuilder
-        .rootUri(properties.getRootUri())
-        .defaultHeader(X_SYSTEM_KEY_HEADER, properties.getToken())
-        .setReadTimeout(Duration.ofMillis(properties.getReadTimeout()))
-        .build();
-  }
-
-  public void sendMail(SendMailRequest request) {
-    RequestEntity<SendMailRequest> requestEntity = RequestEntity
-        .post("/mail-sender/system/send-mail")
-        .accept(MediaType.APPLICATION_JSON)
-        .body(request);
-
-    ResponseEntity<Void> response = restTemplate.exchange(requestEntity, Void.class);
-
-    validateResponse(response, "[MAIL] sendMail failed.");
-  }
-
-  private void validateResponse(@NonNull ResponseEntity<?> response, String errorMessage) {
-    if (response.getStatusCode().is5xxServerError()) {
-      throw new MailInternalServerException(errorMessage);
-    }
-
-    if (response.getStatusCode().isError()) {
-      throw new MailClientException(errorMessage);
+    @Bean
+    public ErrorDecoder errorDecoder() {
+      return (methodKey, response) -> {
+        String url = response.request().url();
+        HttpStatusCode status = HttpStatusCode.valueOf(response.status());
+        if (status.is5xxServerError()) {
+          return new MailInternalServerException("url=" + url);
+        }
+        if (status.isError()) {
+          return new MailClientException("url=" + url);
+        }
+        return new Default().decode(methodKey, response);
+      };
     }
   }
 }

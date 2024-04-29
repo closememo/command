@@ -117,7 +117,7 @@ public class AccountCommandHandler {
   private NaverProfileResponse.NaverProfile getProfileResponse(String code, String status) {
     NaverTokenResponse tokenResponse = naverOAuthClient.getAccessToken(code, status);
     NaverProfileResponse profileResponse = naverApiClient.getNaverProfile(
-        tokenResponse.getTokenType(), tokenResponse.getAccessToken());
+        tokenResponse.getTokenType() + " " + tokenResponse.getAccessToken());
     return profileResponse.getNaverProfile();
   }
 
