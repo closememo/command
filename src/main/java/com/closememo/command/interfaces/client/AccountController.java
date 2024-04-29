@@ -24,7 +24,7 @@ import com.closememo.command.interfaces.client.requests.account.ReissueTokenRequ
 import com.closememo.command.interfaces.client.requests.account.UpdateAccountOptionRequest;
 import com.closememo.command.interfaces.client.requests.account.UpdateAccountTrackRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;

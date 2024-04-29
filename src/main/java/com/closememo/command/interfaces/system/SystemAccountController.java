@@ -6,7 +6,7 @@ import com.closememo.command.application.account.WithdrawAccountCommand;
 import com.closememo.command.config.openapi.apitags.SystemApiTag;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.interfaces.system.requests.account.DeleteAccountRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

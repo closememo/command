@@ -1,7 +1,7 @@
 package com.closememo.command.domain.document;
 
 import com.closememo.command.domain.Identifier;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

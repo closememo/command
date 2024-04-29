@@ -12,7 +12,7 @@ import com.closememo.command.infra.projection.WaitForProjection;
 import com.closememo.command.interfaces.client.requests.suggestion.CreateSuggestionRequest;
 import com.closememo.command.interfaces.client.requests.suggestion.DeleteSuggestionRequest;
 import com.closememo.command.interfaces.client.requests.suggestion.UpdateSuggestionRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,6 @@
 package com.closememo.command.interfaces.client.requests.account;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

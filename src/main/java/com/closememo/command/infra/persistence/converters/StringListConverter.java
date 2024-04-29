@@ -2,8 +2,8 @@ package com.closememo.command.infra.persistence.converters;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.closememo.command.infra.helper.JsonUtils;
+import jakarta.persistence.AttributeConverter;
 import java.util.List;
-import javax.persistence.AttributeConverter;
 
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 

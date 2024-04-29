@@ -1,7 +1,7 @@
 package com.closememo.command.interfaces.system.requests.documents;
 
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter

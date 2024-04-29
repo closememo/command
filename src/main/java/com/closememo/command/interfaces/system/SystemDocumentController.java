@@ -6,7 +6,7 @@ import com.closememo.command.application.document.UpdateAutoTagsCommand;
 import com.closememo.command.config.openapi.apitags.SystemApiTag;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.system.requests.documents.UpdateAutoTagsRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 

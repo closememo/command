@@ -13,8 +13,8 @@ import com.closememo.command.interfaces.client.requests.category.CreateCategoryR
 import com.closememo.command.interfaces.client.requests.category.DeleteCategoryRequest;
 import com.closememo.command.interfaces.client.requests.category.UpdateCategoryRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.Optional;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

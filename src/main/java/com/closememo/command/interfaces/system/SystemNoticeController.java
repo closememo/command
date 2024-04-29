@@ -10,7 +10,7 @@ import com.closememo.command.domain.notice.NoticeId;
 import com.closememo.command.interfaces.system.requests.notice.CreateNoticeRequest;
 import com.closememo.command.interfaces.system.requests.notice.DeleteNoticeRequest;
 import com.closememo.command.interfaces.system.requests.notice.UpdateNoticeRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 

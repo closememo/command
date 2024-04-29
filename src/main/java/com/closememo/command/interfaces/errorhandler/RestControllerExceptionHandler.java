@@ -1,8 +1,8 @@
 package com.closememo.command.interfaces.errorhandler;
 
 import com.closememo.command.domain.BusinessException;
+import jakarta.persistence.NoResultException;
 import java.util.Optional;
-import javax.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

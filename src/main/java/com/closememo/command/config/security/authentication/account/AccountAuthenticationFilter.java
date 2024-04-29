@@ -2,10 +2,10 @@ package com.closememo.command.config.security.authentication.account;
 
 import com.closememo.command.config.security.authentication.ServiceAuthentication;
 import com.closememo.command.domain.account.AccountId;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;

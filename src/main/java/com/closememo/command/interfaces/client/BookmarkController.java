@@ -10,7 +10,7 @@ import com.closememo.command.domain.bookmark.BookmarkId;
 import com.closememo.command.domain.document.DocumentId;
 import com.closememo.command.interfaces.client.requests.bookmark.CreateBookmarkRequest;
 import com.closememo.command.interfaces.client.requests.bookmark.DeleteBookmarkRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;

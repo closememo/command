@@ -1,8 +1,8 @@
 package com.closememo.command.domain.account;
 
 import com.closememo.command.domain.ValueObject;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

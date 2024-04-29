@@ -1,7 +1,7 @@
 package com.closememo.command.application;
 
 import com.closememo.command.domain.account.AccountId;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

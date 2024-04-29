@@ -1,11 +1,11 @@
 package com.closememo.command.infra.persistence.converters;
 
 import com.closememo.command.domain.account.Role;
+import jakarta.persistence.AttributeConverter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.AttributeConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

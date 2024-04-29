@@ -23,11 +23,11 @@ import com.closememo.command.interfaces.client.requests.document.DeleteDocuments
 import com.closememo.command.interfaces.client.requests.document.MailDocumentsRequest;
 import com.closememo.command.interfaces.client.requests.document.UpdateDocumentRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

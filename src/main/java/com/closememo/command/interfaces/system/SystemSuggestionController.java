@@ -6,7 +6,7 @@ import com.closememo.command.application.suggestion.ChangeSuggestionStatusComman
 import com.closememo.command.domain.suggestion.Status;
 import com.closememo.command.domain.suggestion.SuggestionId;
 import com.closememo.command.interfaces.system.requests.suggestion.ChangeSuggestionStatusRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 

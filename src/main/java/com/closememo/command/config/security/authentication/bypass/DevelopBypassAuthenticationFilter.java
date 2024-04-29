@@ -5,8 +5,8 @@ import com.closememo.command.config.security.authentication.account.AccountAuthe
 import com.closememo.command.config.security.authentication.account.AccountPreAuthentication;
 import com.closememo.command.domain.account.AccountId;
 import com.closememo.command.domain.account.AccountRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;

@@ -6,7 +6,7 @@ import com.closememo.command.application.Command;
 import com.closememo.command.config.messaging.kafka.KafkaMessageConverter;
 import com.closememo.command.domain.DomainEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;

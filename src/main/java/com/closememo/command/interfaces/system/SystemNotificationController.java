@@ -14,7 +14,7 @@ import com.closememo.command.interfaces.system.requests.notification.CreateNotif
 import com.closememo.command.interfaces.system.requests.notification.DeleteNotificationRequest;
 import com.closememo.command.interfaces.system.requests.notification.InactivateNotificationRequest;
 import com.closememo.command.interfaces.system.requests.notification.UpdateNotificationRequest;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 

@@ -1,11 +1,11 @@
 package com.closememo.command.config.mdc;
 
 import com.closememo.command.domain.account.AccountId;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
@@ -61,6 +61,7 @@ public class MdcFilter extends OncePerRequestFilter {
   }
 
   private static class MdcUserInfo {
+
     String type;
     String id;
 

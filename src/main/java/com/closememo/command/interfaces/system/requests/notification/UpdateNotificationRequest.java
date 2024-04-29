@@ -1,7 +1,7 @@
 package com.closememo.command.interfaces.system.requests.notification;
 
+import jakarta.validation.constraints.NotBlank;
 import java.time.ZonedDateTime;
-import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
